@@ -574,37 +574,38 @@
             });
         }
 
-        async function descargarCSV() {
-            if(csvVertices.length < 3) return;
-            try {
-                const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        vertices: csvVertices,
-                        radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 0.10,
-                        txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 0.16,
-                        txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8,
-						decimalesSegundos: parseInt(document.getElementById('csvDecimalesSegundos').value) || 0
-                    })
-                });
-                const datos = await respuesta.json();
-                
-                triggerDescarga(datos.dxfContenido, 'poligono_csv.dxf', 'application/dxf');
-                
-                const checkMinuta = document.getElementById('csvGenerarTextoDoc');
-                if (checkMinuta && checkMinuta.checked) {
-                    let contenidoHtml = csvGenerarTextoDescriptivo();
-                    if (!contenidoHtml.startsWith('\ufeff')) {
-                        contenidoHtml = '\ufeff' + contenidoHtml;
-                    }
-                    triggerDescarga(contenidoHtml, 'minuta_csv.doc', 'application/msword;charset=utf-8');
-                }
-            } catch (err) { 
-                console.error(err);
-                alert("Error al descargar el archivo desde el servidor."); 
+async function descargarCSV() {
+    if(csvVertices.length < 3) return;
+    try {
+        const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                vertices: csvVertices,
+                radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 0.10,
+                txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 0.16,
+                txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8,
+                decimalesSegundos: parseInt(document.getElementById('csvDecimalesSegundos').value) || 0
+            })
+        });
+        const datos = await respuesta.json();
+        
+        triggerDescarga(datos.dxfContenido, 'poligono_csv.dxf', 'application/dxf');
+        
+        const checkMinuta = document.getElementById('csvGenerarTextoDoc');
+        if (checkMinuta && checkMinuta.checked) {
+            // CORRECCIÓN: Usamos 'datos.minutaTextoHtml' que viene fresca del servidor modificado
+            let contenidoHtml = datos.minutaTextoHtml;
+            if (!contenidoHtml.startsWith('\ufeff')) {
+                contenidoHtml = '\ufeff' + contenidoHtml;
             }
+            triggerDescarga(contenidoHtml, 'minuta_csv.doc', 'application/msword;charset=utf-8');
         }
+    } catch (err) { 
+        console.error(err);
+        alert("Error al descargar el archivo desde el servidor."); 
+    }
+}
 
         // =========================================================================
         // PROCESAMIENTO PESTAÑA DXF - CURVAS
@@ -725,7 +726,7 @@
             });
         }
 
-        async function descargarDXF() {
+ async function descargarDXF() {
             if(dxfVertices.length < 3) return;
             try {
                 const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
@@ -736,7 +737,7 @@
                         radioCustom: parseFloat(document.getElementById('dxfRadioVertices').value) || 1,
                         txtVerticesCustom: parseFloat(document.getElementById('dxfTxtVertices').value) || 1.5,
                         txtTablaCustom: parseFloat(document.getElementById('dxfTxtTabla').value) || 0.8,
-						decimalesSegundos: parseInt(document.getElementById('dxfDecimalesSegundos').value) || 0
+                        decimalesSegundos: parseInt(document.getElementById('dxfDecimalesSegundos').value) || 0
                     })
                 });
                 const datos = await respuesta.json();
@@ -744,7 +745,8 @@
                 triggerDescarga(datos.dxfContenido, 'poligono_curvas_procesado.dxf', 'application/dxf');
                 
                 if(document.getElementById('dxfGenerarTextoDoc').checked) {
-                    let textoValidoDXF = dxfGenerarTextoDescriptivo();
+                    // CORRECCIÓN: Usamos 'datos.minutaTextoHtml' que viene directa y corregida del servidor
+                    let textoValidoDXF = datos.minutaTextoHtml;
                     if (!textoValidoDXF.startsWith('\ufeff')) {
                         textoValidoDXF = '\ufeff' + textoValidoDXF;
                     }
