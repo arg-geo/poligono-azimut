@@ -189,77 +189,8 @@
   
 <script>
 
-
-
-// =========================================================================
-// CORRECCIÓN: MEMORIAS DESCRIPTIVAS AJUSTADAS A LA PROSA REQUERIDA
-// =========================================================================
-function csvGenerarTextoDescriptivo() {
-    let textoAcumulado = "";
-    for (let i = 0; i < csvVertices.length; i++) {
-        const inicio = csvVertices[i], fin = csvVertices[(i + 1) % csvVertices.length];
-        const azObj = csvCalcularAzimut(fin.x - inicio.x, fin.y - inicio.y);
-        const distFormateada = obtenerDistancia(inicio, fin).toFixed(2);
-
-        textoAcumulado += `de la estación ${numeroAPalabras(i)} (${i}) al punto de observación ${numeroAPalabras((i + 1) % csvVertices.length)} (${(i + 1) % csvVertices.length}) `;
-        textoAcumulado += `un azimut de ${numeroAPalabras(azObj.grados)} grados (${azObj.grados}°), ${numeroAPalabras(azObj.minutos)} minutos (${azObj.minutos}´), ${numeroAPalabras(azObj.segundos)} segundos (${azObj.segundos}”), `;
-        textoAcumulado += `una distancia de ${numeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
-        textoAcumulado += i < csvVertices.length - 1 ? ", " : ".";
-    }
-    return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
-}
-
-
-
-
-function procesarDescargasCSV(){
-    if (csvVertices.length < 3) return;
-    
-    // Tu descarga original del DXF que ya funciona, NO SE TOCA:
-    globalEjecutarDescargaBlob(csvGenerarDXF(), 'poligono_profesional.dxf', 'application/dxf;charset=utf-8');
-    
-    // Tu descarga de la minuta, agregando únicamente '\ufeff' antes de tu función:
-    if (document.getElementById('csvGenerarTextoDoc').checked) {
-        setTimeout(() => { 
-            globalEjecutarDescargaBlob('\ufeff' + csvGenerarTextoDescriptivo(), 'descripcion_poligono.doc', 'application/msword;charset=utf-8'); 
-        }, 300);
-    }
-}
-
-	
-function dxfGenerarTextoDescriptivo() {
-    let textoAcumulado = "";
-    for (let i = 0; i < dxfVertices.length; i++) {
-        const inicio = dxfVertices[i], fin = dxfVertices[(i + 1) % dxfVertices.length];
-        const tramo = dxfAnalizarTramo_Local(inicio, fin);
-        
-        textoAcumulado += `de la estación ${numeroAPalabras(i)} (${i}) al punto de observación ${numeroAPalabras((i + 1) % dxfVertices.length)} (${(i + 1) % dxfVertices.length}) `;
-        
-        if (tramo.esCurva) {
-            const longCurvaFormateada = tramo.longitudArco.toFixed(2);
-            const radioFormateado = tramo.radio.toFixed(2);
-            textoAcumulado += `una curva con un delta de ${numeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${numeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}´), ${numeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}”), `;
-            textoAcumulado += `una longitud de ${numeroAPalabras(longCurvaFormateada)} metros (${longCurvaFormateada} m) y un radio de ${numeroAPalabras(radioFormateado)} metros (${radioFormateado} m)`;
-        } else {
-            const distFormateada = tramo.distancia.toFixed(2);
-            textoAcumulado += `un azimut de ${numeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${numeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}´), ${numeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}”), `;
-            textoAcumulado += `una distancia de ${numeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
-        }
-        
-        textoAcumulado += i < dxfVertices.length - 1 ? ", " : ".";
-    }
-    return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
-}
-
-
-
-        // --- CONFIGURACIÓN DE CONEXIÓN AL BACKEND ---
-        // Mientras pruebes en tu computadora usa: http://localhost:3000
-        // Cuando lo subas a Render, cambia esta URL por la que te dé Render (ej. https://tu-backend.onrender.com)
-        //const BACKEND_URL = "http://localhost:3000"; 
-
-		const BACKEND_URL = "https://poligono-azimut-backend.onrender.com"
-	
+// --- CONFIGURACIÓN DE CONEXIÓN AL BACKEND ---
+        const BACKEND_URL = "https://poligono-azimut-backend.onrender.com";
         const LIMITE_AREA_MAX = 300; 
 
         let csvVerticesOriginales = [];
@@ -307,48 +238,6 @@ function dxfGenerarTextoDescriptivo() {
             document.body.removeChild(a); URL.revokeObjectURL(url);
         }
 
-// =========================================================================
-// CORRECCIÓN: CONVERSIÓN DE NÚMEROS A PALABRAS (INCLUYE DECIMALES)
-// =========================================================================
-function numeroAPalabras(num) {
-    const partes = parseFloat(num).toFixed(2).split('.');
-    const entero = parseInt(partes[0], 10);
-    const decimal = parseInt(partes[1], 10);
-
-    function convertirEntero(n) {
-        if (n === 0) return "cero";
-        const unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
-        const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
-        const especiales = {
-            11: "once", 12: "doce", 13: "trece", 14: "catorce", 15: "quince",
-            16: "dieciséis", 17: "diecisiete", 18: "dieciocho", 19: "diecinueve"
-        };
-
-        if (n < 10) return unidades[n];
-        if (n >= 11 && n <= 19) return especiales[n];
-        if (n < 100) {
-            const d = Math.floor(n / 10), u = n % 10;
-            if (u === 0) return decenas[d];
-            if (d === 2) return "veinti" + unidades[u];
-            return decenas[d] + " y " + unidades[u];
-        }
-        if (n < 1000) {
-            const c = Math.floor(n / 100), resto = n % 100;
-            if (c === 1 && resto === 0) return "cien";
-            const centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
-            return centenas[c] + (resto > 0 ? " " + convertirEntero(resto) : "");
-        }
-        return n.toString();
-    }
-
-    let resultadoLetras = convertirEntero(entero);
-    if (decimal > 0) {
-        resultadoLetras += " punto " + convertirEntero(decimal);
-    }
-    return resultadoLetras;
-}
-
-
         function sugerirEscalaValores(arreglo, prefixTab) {
             const xs = arreglo.map(v => v.x), ys = arreglo.map(v => v.y);
             const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
@@ -360,7 +249,121 @@ function numeroAPalabras(num) {
         }
 
         // =========================================================================
-        // PROCESAMIENTO PESTAÑA CSV (CONEXIÓN AL BACKEND PROTEGIDO)
+        // ALGORITMOS MATEMÁTICOS Y TRADUCTOR DE LETRAS ACTUALIZADO
+        // =========================================================================
+        function csvCalcularAzimut(dx, dy) {
+            let azimut = Math.atan2(dx, dy) * (180 / Math.PI);
+            if (azimut < 0) azimut += 360;
+            const grados = Math.floor(azimut);
+            const minTotal = (azimut - grados) * 60;
+            const minutos = Math.floor(minTotal);
+            const segundos = Math.round((minTotal - minutos) * 60);
+            return { grados, minutos, segundos };
+        }
+
+        function dxfAnalizarTramo_Local(inicio, fin) {
+            const dx = fin.x - inicio.x;
+            const dy = fin.y - inicio.y;
+            const dist = obtenerDistancia(inicio, fin);
+            const azObj = csvCalcularAzimut(dx, dy);
+
+            if (inicio.bulbo && inicio.bulbo !== 0) {
+                const b = inicio.bulbo;
+                const angular = 4 * Math.atan(Math.abs(b));
+                const radio = dist / (2 * Math.sin(angular / 2));
+                const longitudArco = radio * angular;
+                const deltaGrad = angular * (180 / Math.PI);
+                const g = Math.floor(deltaGrad);
+                const mTotal = (deltaGrad - g) * 60;
+                const m = Math.floor(mTotal);
+                const s = (mTotal - m) * 60;
+                return { esCurva: true, longitudArco, radio, dms: { grados: g, minutos: m, segundos: s }, distancia: dist };
+            }
+            return { esCurva: false, distancia: dist, dms: azObj };
+        }
+
+        function numeroAPalabras(num) {
+            const partes = parseFloat(num).toFixed(2).split('.');
+            const entero = parseInt(partes[0], 10);
+            const decimal = parseInt(partes[1], 10);
+
+            function convertirEntero(n) {
+                if (n === 0) return "cero";
+                const unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+                const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+                const especiales = {
+                    11: "once", 12: "doce", 13: "trece", 14: "catorce", 15: "quince",
+                    16: "dieciséis", 17: "diecisiete", 18: "dieciocho", 19: "diecinueve"
+                };
+
+                if (n < 10) return unidades[n];
+                if (n >= 11 && n <= 19) return especiales[n];
+                if (n < 100) {
+                    const d = Math.floor(n / 10), u = n % 10;
+                    if (u === 0) return decenas[d];
+                    if (d === 2) return "veinti" + unidades[u];
+                    return decenas[d] + " y " + unidades[u];
+                }
+                if (n < 1000) {
+                    const c = Math.floor(n / 100), resto = n % 100;
+                    if (c === 1 && resto === 0) return "cien";
+                    const centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
+                    return centenas[c] + (resto > 0 ? " " + convertirEntero(resto) : "");
+                }
+                return n.toString();
+            }
+
+            let resultadoLetras = convertirEntero(entero);
+            if (decimal > 0) {
+                resultadoLetras += " punto " + (decimal < 10 ? "cero " : "") + convertirEntero(decimal);
+            }
+            return resultadoLetras;
+        }
+
+        // =========================================================================
+        // GENERACIÓN DE MEMORIAS DESCRIPTIVAS (.DOC)
+        // =========================================================================
+        function csvGenerarTextoDescriptivo() {
+            let textoAcumulado = "";
+            for (let i = 0; i < csvVertices.length; i++) {
+                const inicio = csvVertices[i], fin = csvVertices[(i + 1) % csvVertices.length];
+                const azObj = csvCalcularAzimut(fin.x - inicio.x, fin.y - inicio.y);
+                const distFormateada = obtenerDistancia(inicio, fin).toFixed(2);
+
+                textoAcumulado += `de la estación ${numeroAPalabras(i)} (${i}) al punto de observación ${numeroAPalabras((i + 1) % csvVertices.length)} (${(i + 1) % csvVertices.length}) `;
+                textoAcumulado += `un azimut de ${numeroAPalabras(azObj.grados)} grados (${azObj.grados}°), ${numeroAPalabras(azObj.minutos)} minutos (${azObj.minutos}´), ${numeroAPalabras(azObj.segundos)} segundos (${azObj.segundos}”), `;
+                textoAcumulado += `una distancia de ${numeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
+                textoAcumulado += i < csvVertices.length - 1 ? ", " : ".";
+            }
+            return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
+        }
+
+        function dxfGenerarTextoDescriptivo() {
+            let textoAcumulado = "";
+            for (let i = 0; i < dxfVertices.length; i++) {
+                const inicio = dxfVertices[i], fin = dxfVertices[(i + 1) % dxfVertices.length];
+                const tramo = dxfAnalizarTramo_Local(inicio, fin);
+                
+                textoAcumulado += `de la estación ${numeroAPalabras(i)} (${i}) al punto de observación ${numeroAPalabras((i + 1) % dxfVertices.length)} (${(i + 1) % dxfVertices.length}) `;
+                
+                if (tramo.esCurva) {
+                    const longCurvaFormateada = tramo.longitudArco.toFixed(2);
+                    const radioFormateado = tramo.radio.toFixed(2);
+                    textoAcumulado += `una curva con un delta de ${numeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${numeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}´), ${numeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}”), `;
+                    textoAcumulado += `una longitud de ${numeroAPalabras(longCurvaFormateada)} metros (${longCurvaFormateada} m) y un radio de ${numeroAPalabras(radioFormateado)} metros (${radioFormateado} m)`;
+                } else {
+                    const distFormateada = tramo.distancia.toFixed(2);
+                    textoAcumulado += `un azimut de ${numeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${numeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}´), ${numeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}”), `;
+                    textoAcumulado += `una distancia de ${numeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
+                }
+                
+                textoAcumulado += i < dxfVertices.length - 1 ? ", " : ".";
+            }
+            return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
+        }
+
+        // =========================================================================
+        // PROCESAMIENTO PESTAÑA CSV
         // =========================================================================
         function leerCSV(e) {
             const f = e.target.files[0]; if(!f) return;
@@ -386,10 +389,9 @@ function numeroAPalabras(num) {
             reader.readAsText(f);
         }
 
-async function cambiarSentidoCSV() {
+        async function cambiarSentidoCSV() {
             if(csvVerticesOriginales.length < 3) return;
             
-            // Asegurar que limpiamos alertas e info previas antes de la petición
             document.getElementById('csvAlerta').style.display = 'none';
             document.getElementById('csvAlerta').innerText = '';
             
@@ -403,8 +405,7 @@ async function cambiarSentidoCSV() {
             } else { csvVertices = [...csvVerticesOriginales]; }
 
             try {
-                // Colocamos un mensaje temporal para que el usuario sepa que está cargando
-                document.getElementById('csvInfo').innerHTML = "⏳ Procesando geometría en el servidor seguro (esto puede demorar un momento si el servidor se está despertando)...";
+                document.getElementById('csvInfo').innerHTML = "⏳ Procesando geometría en el servidor seguro...";
                 document.getElementById('csvInfo').style.display = 'block';
 
                 const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
@@ -438,17 +439,12 @@ async function cambiarSentidoCSV() {
                 document.getElementById('csvDownloadBtn').disabled = false;
                 redibujarCSV();
             } catch (e) {
-                // Si falla, ocultamos el bloque de info y mostramos la alerta real en la interfaz
                 document.getElementById('csvInfo').style.display = 'none';
-                document.getElementById('csvAlerta').innerText = `⚠️ Error de comunicación: No se pudo conectar con el servidor seguro de Render. Detalles: ${e.message}`;
+                document.getElementById('csvAlerta').innerText = `⚠️ Error de comunicación: No se pudo conectar con el servidor seguro. Detalles: ${e.message}`;
                 document.getElementById('csvAlerta').style.display = 'block';
                 console.error(e);
             }
         }
-
-
-
-	
 
         function redibujarCSV() {
             if(csvVertices.length < 3) return;
@@ -477,67 +473,39 @@ async function cambiarSentidoCSV() {
             });
         }
 
-       
-async function descargarCSV() {
-    if(csvVertices.length < 3) return;
-    try {
-        const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                vertices: csvVertices,
-                radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 0.10,
-                txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 0.16,
-                txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8
-            })
-        });
-        const datos = await respuesta.json();
-        
-        // 1. Descarga el DXF del servidor sin problemas
-        triggerDescarga(datos.dxfContenido, 'poligono_csv.dxf', 'application/dxf');
-        
-        // 2. Descarga de la minuta protegida contra errores
-        const checkMinuta = document.getElementById('csvGenerarTextoDoc') || document.querySelector('input[type="checkbox"]');
-        
-        if (checkMinuta && checkMinuta.checked) {
-            // Obtenemos la prosa en letras de TU función original
-            let contenidoHtml = csvGenerarTextoDescriptivo();
-            
-            // Si tu función aún no incluye el prefijo '\ufeff', se lo aseguramos aquí
-            if (!contenidoHtml.startsWith('\ufeff')) {
-                contenidoHtml = '\ufeff' + contenidoHtml;
+        async function descargarCSV() {
+            if(csvVertices.length < 3) return;
+            try {
+                const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        vertices: csvVertices,
+                        radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 0.10,
+                        txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 0.16,
+                        txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8
+                    })
+                });
+                const datos = await respuesta.json();
+                
+                triggerDescarga(datos.dxfContenido, 'poligono_csv.dxf', 'application/dxf');
+                
+                const checkMinuta = document.getElementById('csvGenerarTextoDoc');
+                if (checkMinuta && checkMinuta.checked) {
+                    let contenidoHtml = csvGenerarTextoDescriptivo();
+                    if (!contenidoHtml.startsWith('\ufeff')) {
+                        contenidoHtml = '\ufeff' + contenidoHtml;
+                    }
+                    triggerDescarga(contenidoHtml, 'minuta_csv.doc', 'application/msword;charset=utf-8');
+                }
+            } catch (err) { 
+                console.error(err);
+                alert("Error al descargar el archivo desde el servidor."); 
             }
-            
-            // MÉTODO SEGURO: Empaquetamos en un Blob nativo para evitar el "Error de descarga"
-            const blob = new Blob([contenidoHtml], { type: 'application/msword;charset=utf-8' });
-            const urlDescarga = URL.createObjectURL(blob);
-            
-            // Crear un enlace temporal invisible para forzar la descarga en el navegador
-            const enlaceTemporal = document.createElement('a');
-            enlaceTemporal.href = urlDescarga;
-            enlaceTemporal.download = 'minuta_csv.doc';
-            document.body.appendChild(enlaceTemporal);
-            enlaceTemporal.click();
-            
-            // Limpieza de memoria
-            document.body.removeChild(enlaceTemporal);
-            URL.revokeObjectURL(urlDescarga);
         }
-    } catch (err) { 
-        console.error(err);
-        alert("Error al descargar el archivo desde el servidor."); 
-    }
-}
-
-
-
-
-
-
-
 
         // =========================================================================
-        // PROCESAMIENTO PESTAÑA DXF - CURVAS (CONEXIÓN AL BACKEND PROTEGIDO)
+        // PROCESAMIENTO PESTAÑA DXF - CURVAS
         // =========================================================================
         function leerDXF(e) {
             const f = e.target.files[0]; if(!f) return;
@@ -654,71 +622,40 @@ async function descargarCSV() {
             });
         }
 
-        
-
-        // Script para inicializar dinámicamente el año del Footer institucional
-        document.getElementById('anioDinamicoFooter').innerText = new Date().getFullYear();
-    </script>  
-  
-  
-  async function descargarDXF() {
-    if(dxfVertices.length < 3) return;
-    try {
-        const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                vertices: dxfVertices,
-                radioCustom: parseFloat(document.getElementById('dxfRadioVertices').value) || 1,
-                txtVerticesCustom: parseFloat(document.getElementById('dxfTxtVertices').value) || 1.5,
-                txtTablaCustom: parseFloat(document.getElementById('dxfTxtTabla').value) || 0.8
-            })
-        });
-        const datos = await respuesta.json();
-        
-        // Descarga el archivo DXF que viene procesado del servidor
-        triggerDescarga(datos.dxfContenido, 'poligono_curvas_procesado.dxf', 'application/dxf');
-        
-        // Descarga la minuta llamando a TU función original de letras para DXF
-        if(document.getElementById('dxfGenerarTextoDoc').checked) {
-            // Llamamos a tu algoritmo nativo que maneja curvas y letras
-            const textoValidoDXF = dxfGenerarTextoDescriptivo();
-            
-            // Forzamos el charset-utf-8 en el trigger para evitar la ventana de conversión
-            triggerDescarga(textoValidoDXF, 'minuta_dxf.doc', 'application/msword;charset=utf-8');
+        async function descargarDXF() {
+            if(dxfVertices.length < 3) return;
+            try {
+                const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        vertices: dxfVertices,
+                        radioCustom: parseFloat(document.getElementById('dxfRadioVertices').value) || 1,
+                        txtVerticesCustom: parseFloat(document.getElementById('dxfTxtVertices').value) || 1.5,
+                        txtTablaCustom: parseFloat(document.getElementById('dxfTxtTabla').value) || 0.8
+                    })
+                });
+                const datos = await respuesta.json();
+                
+                triggerDescarga(datos.dxfContenido, 'poligono_curvas_procesado.dxf', 'application/dxf');
+                
+                if(document.getElementById('dxfGenerarTextoDoc').checked) {
+                    let textoValidoDXF = dxfGenerarTextoDescriptivo();
+                    if (!textoValidoDXF.startsWith('\ufeff')) {
+                        textoValidoDXF = '\ufeff' + textoValidoDXF;
+                    }
+                    triggerDescarga(textoValidoDXF, 'minuta_dxf.doc', 'application/msword;charset=utf-8');
+                }
+            } catch (err) { 
+                alert("Error al procesar la descarga desde el servidor."); 
+            }
         }
-    } catch (err) { 
-        alert("Error al procesar la descarga desde el servidor."); 
-    }
-}
-  
-  
-	
-	<footer class="site-footer">
-        <div class="footer-container">
-            <p>Procesamiento Avanzado de Datos Topográficos: Generación de Archivos DXF bajo Estándares CAD (Unidades en Metros) e Integración de Curvas (Bulbos)</p>
-            
-            <hr class="footer-hr">
-            
-            <p class="footer-disclaimer">
-                <strong>AVISO DE EXENCIÓN DE RESPONSABILIDAD:</strong> Este servicio web de procesamiento de polígonos y generación de memorias descriptivas se proporciona de forma gratuita y con fines exclusivamente informativos, académicos y de utilidad pública. El autor no asume ninguna responsabilidad legal, civil o administrativa por la exactitud, integridad o idoneidad técnica de los archivos DXF, cálculos de áreas o minutas de texto generadas. Es responsabilidad exclusiva del profesional o usuario final contrastar, verificar y validar los resultados frente a los levantamientos de campo y las normativas jurídicas o catastrales vigentes.
-            </p>
-            
-            <hr class="footer-hr">
-            
-            <div class="footer-bottom">
-                <span>🇬🇹 Servicio desarrollado por <strong>MSc Aldo González</strong></span>
-                <span class="footer-contact-box">
-                    📧 Soporte y Contacto: <a href="mailto:conversorgtm@gmail.com">conversorgtm@gmail.com</a>
-                </span>
-                <span>&copy; <span id="anioDinamicoFooter"></span> Todos los derechos reservados.</span>
-            </div>
-        </div>
-    </footer>
 
-    <script>
-        document.getElementById('anioDinamicoFooter').innerText = new Date().getFullYear();
-    </script>
+
+
+	
+
+</script>
 	
 </body>
 </html>
