@@ -183,9 +183,13 @@
 		</div>
     </div>
 
+	
+  
+  
+  
+<script>
 
-
-function dxfGenerarTextoDescriptivo() {
+	function dxfGenerarTextoDescriptivo() {
     let textoAcumulado = "Propiedad analizada: ";
     for (let i = 0; i < dxfVertices.length; i++) {
         const inicio = dxfVertices[i], fin = dxfVertices[(i + 1) % dxfVertices.length];
@@ -221,11 +225,6 @@ function csvGenerarTextoDescriptivo() {
     }
     return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
 }
-		
-  
-  
-  
-<script>
 
 	
         // --- CONFIGURACIÓN DE CONEXIÓN AL BACKEND ---
