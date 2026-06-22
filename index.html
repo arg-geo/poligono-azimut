@@ -444,37 +444,39 @@ async function cambiarSentidoCSV() {
         }
 
        
- async function descargarCSV() {
-            if(csvVertices.length < 3) return;
-            try {
-                const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        vertices: csvVertices,
-                        radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 1,
-                        txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 1.5,
-                        txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8
-                    })
-                });
-                const datos = await respuesta.json();
-                triggerDescarga(datos.dxfContenido, 'poligono_csv.dxf', 'application/dxf');
-                
-                if(document.getElementById('csvGenerarTextoDoc').checked) {
-                    let txt = "Descripción: ";
-                    for(let i=0; i<csvVertices.length; i++) {
-                        let ini = csvVertices[i], fin = csvVertices[(i+1)%csvVertices.length];
-                        let dx = fin.x - ini.x, dy = fin.y - ini.y;
-                        let azimut = Math.atan2(dx, dy) * 180 / Math.PI; if (azimut < 0) azimut += 360;
-                        let grados = Math.floor(azimut), minDec = (azimut - grados) * 60, minutos = Math.floor(minDec);
-                        let segundos = Math.round((minDec - minutos) * 60);
-                        let dist = obtenerDistancia(ini, fin).toFixed(2);
-                        txt += `de estación ${numeroAPalabras(i)} (${i}) a ${numeroAPalabras((i+1)%csvVertices.length)} (${(i+1)%csvVertices.length}) azimut ${grados}°${minutos}'${segundos}" dist ${dist} m; `;
-                    }
-                    triggerDescarga(txt, 'minuta_csv.doc', 'application/msword');
-                }
-            } catch (err) { alert("Error al descargar el archivo desde el servidor."); }
+async function descargarCSV() {
+    if(csvVertices.length < 3) return;
+    try {
+        const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                vertices: csvVertices,
+                radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 0.10,
+                txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 0.16,
+                txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8
+            })
+        });
+        const datos = await respuesta.json();
+        
+        // 1. Descarga el DXF geométrico puro del servidor
+        triggerDescarga(datos.dxfContenido, 'poligono_csv.dxf', 'application/dxf');
+        
+        // 2. Descarga la minuta usando TU función perfecta de palabras
+        // Buscamos el checkbox por su ID, o por defecto el primer checkbox si cambió de nombre
+        const checkMinuta = document.getElementById('csvGenerarTextoDoc') || document.querySelector('input[type="checkbox"]');
+        
+        if (checkMinuta && checkMinuta.checked) {
+            // EJECUTA TU ALGORITMO ORIGINAL (El que pasa todo a letras completas)
+            const textoValido = csvGenerarTextoDescriptivo(); 
+            
+            // Descarga directa a Word con codificación correcta
+            triggerDescarga(textoValido, 'minuta_csv.doc', 'application/msword;charset=utf-8');
         }
+    } catch (err) { 
+        alert("Error al descargar el archivo desde el servidor."); 
+    }
+}
 
 
 
