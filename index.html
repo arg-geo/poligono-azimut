@@ -189,42 +189,61 @@
   
 <script>
 
-	function dxfGenerarTextoDescriptivo() {
-    let textoAcumulado = "Propiedad analizada: ";
-    for (let i = 0; i < dxfVertices.length; i++) {
-        const inicio = dxfVertices[i], fin = dxfVertices[(i + 1) % dxfVertices.length];
-        // Llama a la versión aislada local original
-        const tramo = dxfAnalizarTramo_Local(inicio, fin);
-        const longitudTramoFormateada = (tramo.esCurva ? tramo.longitudArco : tramo.distancia).toFixed(2);
 
-        textoAcumulado += `de la estación ${globalNumeroAPalabras(i)} (${i}) al punto de observación ${globalNumeroAPalabras((i + 1) % dxfVertices.length)} (${(i + 1) % dxfVertices.length}) `;
-        
-        if (tramo.esCurva) {
-            textoAcumulado += `una curva con delta de ${globalNumeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${globalNumeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}'), ${globalNumeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}") y radio de ${globalNumeroAPalabras(tramo.radio.toFixed(2))} metros (${tramo.radio.toFixed(2)} m), con `;
-        } else {
-            textoAcumulado += `un azimut de ${globalNumeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${globalNumeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}'), ${globalNumeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}"), `;
+
+    function csvGenerarTextoDescriptivo() {
+        let textoAcumulado = ":";
+        for (let i = 0; i < csvVertices.length; i++) {
+            const inicio = csvVertices[i], fin = csvVertices[(i + 1) % csvVertices.length];
+            const azObj = csvCalcularAzimut(fin.x - inicio.x, fin.y - inicio.y);
+            const distFormateada = globalCalcularDistancia(inicio, fin).toFixed(2);
+
+            textoAcumulado += `de la estación ${globalNumeroAPalabras(i)} (${i}) al punto de observación ${globalNumeroAPalabras((i + 1) % csvVertices.length)} (${(i + 1) % csvVertices.length}) `;
+            textoAcumulado += `un azimut de ${globalNumeroAPalabras(azObj.grados)} grados (${azObj.grados}°), ${globalNumeroAPalabras(azObj.minutos)} minutos (${azObj.minutos}´), ${globalNumeroAPalabras(azObj.segundos)} segundos (${azObj.segundos}”), `;
+            textoAcumulado += `una distancia de ${globalNumeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
+            textoAcumulado += i < csvVertices.length - 1 ? "; " : ".";
         }
-        
-        textoAcumulado += `una distancia de ${globalNumeroAPalabras(longitudTramoFormateada)} metros (${longitudTramoFormateada} m)`;
-        textoAcumulado += i < dxfVertices.length - 1 ? "; " : ".";
+        return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
     }
-    return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
+
+function procesarDescargasCSV(){
+    if (csvVertices.length < 3) return;
+    
+    // Tu descarga original del DXF que ya funciona, NO SE TOCA:
+    globalEjecutarDescargaBlob(csvGenerarDXF(), 'poligono_profesional.dxf', 'application/dxf;charset=utf-8');
+    
+    // Tu descarga de la minuta, agregando únicamente '\ufeff' antes de tu función:
+    if (document.getElementById('csvGenerarTextoDoc').checked) {
+        setTimeout(() => { 
+            globalEjecutarDescargaBlob('\ufeff' + csvGenerarTextoDescriptivo(), 'descripcion_poligono.doc', 'application/msword;charset=utf-8'); 
+        }, 300);
+    }
 }
 
-function csvGenerarTextoDescriptivo() {
-    let textoAcumulado = "Propiedad analizada: "; // Corregido el ":" inicial por el texto institucional formal
-    for (let i = 0; i < csvVertices.length; i++) {
-        const inicio = csvVertices[i], fin = csvVertices[(i + 1) % csvVertices.length];
-        const azObj = csvCalcularAzimut(fin.x - inicio.x, fin.y - inicio.y);
-        const distFormateada = globalCalcularDistancia(inicio, fin).toFixed(2);
+	
+    function dxfGenerarTextoDescriptivo() {
+        let textoAcumulado = "Propiedad analizada: ";
+        for (let i = 0; i < dxfVertices.length; i++) {
+            const inicio = dxfVertices[i], fin = dxfVertices[(i + 1) % dxfVertices.length];
+            // Llama a la nueva versión aislada local
+            const tramo = dxfAnalizarTramo_Local(inicio, fin);
+            const longitudTramoFormateada = (tramo.esCurva ? tramo.longitudArco : tramo.distancia).toFixed(2);
 
-        textoAcumulado += `de la estación ${globalNumeroAPalabras(i)} (${i}) al punto de observación ${globalNumeroAPalabras((i + 1) % csvVertices.length)} (${(i + 1) % csvVertices.length}) `;
-        textoAcumulado += `un azimut de ${globalNumeroAPalabras(azObj.grados)} grados (${azObj.grados}°), ${globalNumeroAPalabras(azObj.minutos)} minutos (${azObj.minutos}´), ${globalNumeroAPalabras(azObj.segundos)} segundos (${azObj.segundos}”), `;
-        textoAcumulado += `una distancia de ${globalNumeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
-        textoAcumulado += i < csvVertices.length - 1 ? "; " : ".";
+            textoAcumulado += `de la estación ${globalNumeroAPalabras(i)} (${i}) al punto de observación ${globalNumeroAPalabras((i + 1) % dxfVertices.length)} (${(i + 1) % dxfVertices.length}) `;
+            
+            if (tramo.esCurva) {
+                textoAcumulado += `una curva con delta de ${globalNumeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${globalNumeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}'), ${globalNumeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}") y radio de ${globalNumeroAPalabras(tramo.radio.toFixed(2))} metros (${tramo.radio.toFixed(2)} m), con `;
+            } else {
+                textoAcumulado += `un azimut de ${globalNumeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${globalNumeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}'), ${globalNumeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}"), `;
+            }
+            
+            textoAcumulado += `una distancia de ${globalNumeroAPalabras(longitudTramoFormateada)} metros (${longitudTramoFormateada} m)`;
+            textoAcumulado += i < dxfVertices.length - 1 ? "; " : ".";
+        }
+        return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
     }
-    return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
-}
+	
+	
 
 	
         // --- CONFIGURACIÓN DE CONEXIÓN AL BACKEND ---
