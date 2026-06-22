@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Procesador de Polígonos</title>
     <style>
         body { font-family: sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; color: #333; }
@@ -124,6 +125,84 @@
             font-family: monospace;
         }
         .footer-contact-box a:hover { text-decoration: underline; }
+
+
+/* =========================================================================
+   MEJORAS DE DISEÑO RESPONSIVO PARA PANTALLAS MÓVILES
+   ========================================================================= */
+@media (max-width: 768px) {
+    /* 1. Ajustar el contenedor principal a una sola columna */
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+        padding: 15px !important;
+    }
+
+    /* Si usas un diseño de dos columnas (panel izquierdo / canvas derecho) */
+    .main-layout, .flex-container {
+        display: flex;
+        flex-direction: column !important;
+        gap: 15px;
+    }
+
+    /* 2. Hacer que las pestañas (Tabs) sean más fáciles de presionar con el dedo */
+    .tabs-container {
+        display: flex;
+        width: 100%;
+    }
+    
+    .tab {
+        flex: 1;
+        text-align: center;
+        padding: 12px 8px !important;
+        font-size: 14px !important;
+    }
+
+    /* 3. Hacer el Canvas responsivo para que no se desborde de la pantalla */
+    canvas {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 350px; /* Evita que ocupe toda la pantalla vertical */
+        background-color: #fcfcfc;
+        border: 1px solid #ddd;
+    }
+
+    /* 4. Inputs, botones y controles a lo ancho total para mejor interacción */
+    input[type="file"], 
+    input[type="number"], 
+    input[type="text"], 
+    button {
+        width: 100% !important;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        min-height: 44px; /* Tamaño recomendado por Google para botones táctiles */
+        font-size: 14px !important;
+    }
+
+    /* Ajustar las filas de configuración que llevan texto e input a la par */
+    .control-row, .form-group {
+        display: flex;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 5px;
+    }
+    
+    .control-row input {
+        width: 100% !important;
+    }
+
+    /* 5. Optimizar alertas y textos informativos */
+    .info-box, .alert-box, #csvInfo, #dxfInfo, #csvAlerta, #dxfAlerta {
+        font-size: 13px !important;
+        padding: 10px !important;
+        word-wrap: break-word;
+    }
+}
     </style>
 </head>
 <body>
