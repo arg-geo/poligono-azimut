@@ -69,7 +69,7 @@
         .content.active { display: block; }
         
         .panel { margin-top: 15px; padding: 12px; background: #eef3fc; border-left: 4px solid #0d47a1; border-radius: 0 4px 4px 0; font-size: 14px; }
-        canvas { border: 1px solid #cccccc; margin-top: 15px; background: #fff; border-radius: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+        canvas { border: 1px solid #cccccc; margin-top: 15px; background: #f0f4f8; border-radius: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }		
         .alerta { color: #c62828; font-weight: bold; margin-top: 15px; padding: 12px; background: #ffebee; border: 1px solid #ffcdd2; border-radius: 4px; display: none; font-size: 14px; }
 		
 		/* --- ESTILOS ADAPTADOS PARA EL FOOTER INSTITUCIONAL --- */
@@ -177,6 +177,10 @@
         <div id="dxfAlerta" class="alerta"></div>
         <div id="dxfInfo" class="panel" style="display:none;"></div>
         <canvas id="dxfCanvas" width="500" height="450"></canvas>
+
+		<div style="background-color: #fff9e6; border-left: 5px solid #ffcc00; padding: 15px; margin-top: 15px; border-radius: 4px; font-family: sans-serif; font-size: 13.5px; color: #665200; line-height: 1.5; text-align: left;">
+		    <strong>⚠️ Nota de visualización:</strong> Debido a tolerancias de redondeo y diferencias en la interpretación matemática de vectores cortos (como ochavos o curvas de esquina), el visor web interactivo puede mostrar de forma eventual arcos orientados hacia el interior. Proceda con la descarga del archivo <strong>.dxf</strong>; los parámetros topológicos nativos se exportan de forma correcta y se mantendrán fieles a la geometría original en AutoCAD.
+		</div>
     </div>
 
   
@@ -190,6 +194,7 @@
         //const BACKEND_URL = "http://localhost:3000"; 
 
 		const BACKEND_URL = "https://poligono-azimut-backend.onrender.com"
+	
         const LIMITE_AREA_MAX = 300; 
 
         let csvVerticesOriginales = [];
