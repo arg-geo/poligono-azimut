@@ -459,25 +459,41 @@ async function descargarCSV() {
         });
         const datos = await respuesta.json();
         
-        // 1. Descarga el DXF geométrico puro del servidor
+        // 1. Descarga el DXF del servidor sin problemas
         triggerDescarga(datos.dxfContenido, 'poligono_csv.dxf', 'application/dxf');
         
-        // 2. Descarga la minuta usando TU función perfecta de palabras
-        // Buscamos el checkbox por su ID, o por defecto el primer checkbox si cambió de nombre
+        // 2. Descarga de la minuta protegida contra errores
         const checkMinuta = document.getElementById('csvGenerarTextoDoc') || document.querySelector('input[type="checkbox"]');
         
         if (checkMinuta && checkMinuta.checked) {
-            // EJECUTA TU ALGORITMO ORIGINAL (El que pasa todo a letras completas)
-            const textoValido = csvGenerarTextoDescriptivo(); 
+            // Obtenemos la prosa en letras de TU función original
+            let contenidoHtml = csvGenerarTextoDescriptivo();
             
-            // Descarga directa a Word con codificación correcta
-            triggerDescarga(textoValido, 'minuta_csv.doc', 'application/msword;charset=utf-8');
+            // Si tu función aún no incluye el prefijo '\ufeff', se lo aseguramos aquí
+            if (!contenidoHtml.startsWith('\ufeff')) {
+                contenidoHtml = '\ufeff' + contenidoHtml;
+            }
+            
+            // MÉTODO SEGURO: Empaquetamos en un Blob nativo para evitar el "Error de descarga"
+            const blob = new Blob([contenidoHtml], { type: 'application/msword;charset=utf-8' });
+            const urlDescarga = URL.createObjectURL(blob);
+            
+            // Crear un enlace temporal invisible para forzar la descarga en el navegador
+            const enlaceTemporal = document.createElement('a');
+            enlaceTemporal.href = urlDescarga;
+            enlaceTemporal.download = 'minuta_csv.doc';
+            document.body.appendChild(enlaceTemporal);
+            enlaceTemporal.click();
+            
+            // Limpieza de memoria
+            document.body.removeChild(enlaceTemporal);
+            URL.revokeObjectURL(urlDescarga);
         }
     } catch (err) { 
+        console.error(err);
         alert("Error al descargar el archivo desde el servidor."); 
     }
 }
-
 
 
 
