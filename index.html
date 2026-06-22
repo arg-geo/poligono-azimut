@@ -289,9 +289,12 @@
             reader.readAsText(f);
         }
 
-        async function cambiarSentidoCSV() {
+async function cambiarSentidoCSV() {
             if(csvVerticesOriginales.length < 3) return;
+            
+            // Asegurar que limpiamos alertas e info previas antes de la petición
             document.getElementById('csvAlerta').style.display = 'none';
+            document.getElementById('csvAlerta').innerText = '';
             
             if(document.getElementById('csvInvertirSentido').checked) {
                 let tmp = []; const n = csvVerticesOriginales.length;
@@ -303,6 +306,10 @@
             } else { csvVertices = [...csvVerticesOriginales]; }
 
             try {
+                // Colocamos un mensaje temporal para que el usuario sepa que está cargando
+                document.getElementById('csvInfo').innerHTML = "⏳ Procesando geometría en el servidor seguro (esto puede demorar un momento si el servidor se está despertando)...";
+                document.getElementById('csvInfo').style.display = 'block';
+
                 const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -313,7 +320,12 @@
                         txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8
                     })
                 });
+                
                 const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    throw new Error(datos.error || "Error en la respuesta del servidor.");
+                }
 
                 if(datos.areaCalculada > LIMITE_AREA_MAX) {
                     document.getElementById('csvAlerta').innerText = `Error: El área calculada (${globalFormatearNumero(datos.areaCalculada)} m²) supera el límite de ${LIMITE_AREA_MAX} m².`;
@@ -329,9 +341,17 @@
                 document.getElementById('csvDownloadBtn').disabled = false;
                 redibujarCSV();
             } catch (e) {
-                alert("Error de comunicación con el servidor seguro.");
+                // Si falla, ocultamos el bloque de info y mostramos la alerta real en la interfaz
+                document.getElementById('csvInfo').style.display = 'none';
+                document.getElementById('csvAlerta').innerText = `⚠️ Error de comunicación: No se pudo conectar con el servidor seguro de Render. Detalles: ${e.message}`;
+                document.getElementById('csvAlerta').style.display = 'block';
+                console.error(e);
             }
         }
+
+
+
+	
 
         function redibujarCSV() {
             if(csvVertices.length < 3) return;
