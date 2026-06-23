@@ -214,23 +214,23 @@
 
     <div class="tabs-container">
         <div class="tab active" onclick="switchTab('csv')">📄 Procesar CSV</div>
-        <div class="tab" onclick="switchTab('dxf')">📁 Procesar DXF (Curvas)</div>
+        <div class="tab" onclick="switchTab('dxf')">📐🗺️ Procesar DXF (Curvas)</div>
     </div>
 	
 
  
 
     <div id="tab-csv" class="content active">
-        <label>Seleccionar CSV (Num, X, Y): </label>
+        <label>Seleccionar archivo CSV (Num, X, Y): </label>
         <input type="file" id="csvFile" accept=".csv,.txt"><br><br>
         
         <input type="checkbox" id="csvInvertirSentido"> Invertir sentido de recorrido<br><br>
 
-        <label>Radio Vértice: </label> <input type="number" id="csvRadioVertices" step="0.01" value="1.00">
-        <label>Txt Vértice: </label> <input type="number" id="csvTxtVertices" step="0.01" value="1.50">
-        <label>Txt Tabla: </label> <input type="number" id="csvTxtTabla" step="0.01" value="0.80"><br><br>
+        <label>Radio círculo: </label> <input type="number" id="csvRadioVertices" step="0.01" value="1.00">
+        <label>Altura de Texto en Vértice: </label> <input type="number" id="csvTxtVertices" step="0.01" value="1.50">
+        <label>Altura de Texto en Tabla: </label> <input type="number" id="csvTxtTabla" step="0.01" value="0.80"><br><br>
 
-		<label>Decimales Segundos: </label>
+		<label>Cantidad de Decimales para los Segundos: </label>
         <select id="csvDecimalesSegundos" style="padding: 4px; border-radius: 4px; border: 1px solid #ccc; width: 60px; text-align: center; margin-right: 15px;">
             <option value="0" selected>0</option>
             <option value="1">1</option>
@@ -238,7 +238,7 @@
         </select>
         <br><br>
 
-        <input type="checkbox" id="csvGenerarTextoDoc" checked> Generar Minuta (.doc)
+        <input type="checkbox" id="csvGenerarTextoDoc" checked> Generar Texto de la Tabla de Azimut (.doc)
         <br><br>
         <button id="csvDownloadBtn" disabled>Descargar Archivos</button>
         
@@ -253,11 +253,11 @@
         
         <input type="checkbox" id="dxfInvertirSentido"> Invertir sentido de recorrido<br><br>
 
-        <label>Radio Vértice: </label> <input type="number" id="dxfRadioVertices" step="0.01" value="1.00">
-        <label>Txt Vértice: </label> <input type="number" id="dxfTxtVertices" step="0.01" value="1.50">
-        <label>Txt Tabla: </label> <input type="number" id="dxfTxtTabla" step="0.01" value="0.80"><br><br>
+        <label>Radio círculo: </label> <input type="number" id="dxfRadioVertices" step="0.01" value="1.00">
+        <label>Altura de Texto en Vértice: </label> <input type="number" id="dxfTxtVertices" step="0.01" value="1.50">
+        <label>Altura de Texto en Tabla: </label> <input type="number" id="dxfTxtTabla" step="0.01" value="0.80"><br><br>
 
-		<label>Decimales Segundos: </label>
+		<label>Cantidad de Decimales para los Segundos: </label>
         <select id="dxfDecimalesSegundos" style="padding: 4px; border-radius: 4px; border: 1px solid #ccc; width: 60px; text-align: center; margin-right: 15px;">
             <option value="0" selected>0</option>
             <option value="1">1</option>
@@ -267,7 +267,7 @@
 		
 
 		
-        <input type="checkbox" id="dxfGenerarTextoDoc" checked> Generar Minuta (.doc)
+        <input type="checkbox" id="dxfGenerarTextoDoc" checked> Generar Texto de la Tabla de Azimut (.doc)
         <br><br>
         <button id="dxfDownloadBtn" disabled>Descargar Archivos</button>
         
