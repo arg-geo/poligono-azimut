@@ -2,377 +2,347 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polígonos y Tabla de Azimut</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesador de Polígonos</title>
+    
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; color: #333; }
+        /* ===== 1. ESTILOS GENERALES ===== */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f0f4f8; /* Fondo general gris-azul claro que da contraste */
+            color: #333; 
+        }
 
-
-		/* Estilo del botón Descargar */
-.btn-principal {
-    background-color: #0d47a1;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    font-size: 15px;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.2s, opacity 0.2s;
-    margin-top: 10px;
-}
-
-.btn-principal:hover:not(:disabled) {
-    background-color: #0a3578;
-}
-
-/* Estado deshabilitado del botón */
-.btn-principal:disabled {
-    background-color: #cbd5e1;
-    color: #94a3b8;
-    cursor: not-allowed;
-}
-
-/* Centrado del lienzo de dibujo */
-.canvas-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-/* La Nota de Advertencia en DXF con diseño moderno */
-.panel-advertencia {
-    background-color: #fffbeb;
-    border-left: 4px solid #d97706;
-    padding: 15px;
-    margin-top: 20px;
-    border-radius: 0 6px 6px 0;
-    font-size: 13.5px;
-    color: #78350f;
-    line-height: 1.6;
-    text-align: left;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-}
-		
-        /* Encabezado Institucional Azul */
+        /* ===== 2. ENCABEZADO INSTITUCIONAL ===== */
         .header-institucional {
-            background-color: #0e0eab;
-            color: #e3e1e1;
+            background-color: #0d47a1; /* Azul Marino Intenso */
+            color: #ffffff;
             text-align: center;
-            padding: 25px 20px;
+            padding: 30px 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .header-institucional h2 {
             margin: 0 0 8px 0;
-            font-size: 26px;
+            font-size: 28px;
             font-weight: bold;
+            letter-spacing: 0.5px;
         }
         .header-institucional p {
             margin: 0;
-            font-size: 14px;
-            color: #bbdefb;
-            font-weight: 500;
+            font-size: 15px;
+            opacity: 0.9;
         }
 
-        /* Contenedor de Pestañas y Navegación */
+        /* ===== 3. CONTENEDOR DE PESTAÑAS (TABS) ===== */
         .tabs-container {
-            max-width: 1000px;
-            margin: 20px auto 0 auto;
-            padding: 0 20px;
-            border-bottom: 2px solid #e0e0e0;
             display: flex;
-            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            border-bottom: 2px solid #e2e8f0;
+            max-width: 800px;
+            margin: 30px auto 0 auto;
+            border-radius: 8px 8px 0 0;
         }
         .tab {
-            display: inline-flex;
-            align-items: center;
-            padding: 12px 20px;
+            padding: 15px 30px;
             cursor: pointer;
-            background: none;
-            margin-right: 10px;
-            font-size: 15px;
             font-weight: 600;
-            color: #555;
-            border: none;
+            color: #64748b;
             border-bottom: 3px solid transparent;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+        .tab:hover {
+            color: #0d47a1;
+            background-color: #f8fafc;
         }
         .tab.active {
             color: #0d47a1;
-            border-bottom: 3px solid #0d47a1;
-        }
-        .tab:hover:not(.active) {
-            color: #0d47a1;
+            border-bottom: 3px solid #0d47a1; /* Línea azul en la pestaña activa */
+            background-color: #ffffff;
         }
 
-        /* Bloque de Contenido Principal */
+        /* ===== 4. TARJETA DE CONTENIDO CONTRASTADA ===== */
         .content {
-            display: none;
-            max-width: 960px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: none; /* Ocultas por defecto */
+            background: #ffffff; /* Fondo blanco puro para resaltar del fondo gris */
+            padding: 40px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Sombra suave de elevación */
+            max-width: 800px;
+            margin: 0 auto 50px auto;
+            box-sizing: border-box;
         }
-        .content.active { display: block; }
-        
-        .panel { margin-top: 15px; padding: 12px; background: #eef3fc; border-left: 4px solid #0d47a1; border-radius: 0 4px 4px 0; font-size: 14px; }
-        canvas { border: 1px solid #cccccc; margin-top: 15px; background: #f0f4f8; border-radius: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }		
-        .alerta { color: #c62828; font-weight: bold; margin-top: 15px; padding: 12px; background: #ffebee; border: 1px solid #ffcdd2; border-radius: 4px; display: none; font-size: 14px; }
-		
-		/* --- ESTILOS ADAPTADOS PARA EL FOOTER INSTITUCIONAL --- */
-        .site-footer {
-            background-color: #1e293b; /* bg-slate-800 */
-            color: #94a3b8; /* text-slate-400 */
-            padding: 24px 16px; /* py-6 px-4 */
-            font-size: 12px; /* text-xs */
-            border-top: 1px solid #334155; /* border-slate-700 */
-            margin-top: 40px;
+        .content.active { 
+            display: block; /* Solo se muestra la activa */
         }
-        .footer-container {
-            max-width: 896px; /* max-w-4xl */
-            margin: 0 auto;
-            text-align: center;
-        }
-        .footer-container p { margin: 6px 0; }
-        .footer-hr {
-            border: 0;
-            border-top: 1px solid #334155; /* border-slate-700 */
-            margin: 12px 0;
-        }
-        .footer-disclaimer {
-            color: #64748b; /* text-slate-500 */
-            font-weight: 500;
-            line-height: 1.625; /* leading-relaxed */
-        }
-        .footer-bottom {
-            color: #94a3b8;
-            font-weight: 500;
-            font-size: 11px;
+
+        /* ===== 5. FORMULARIOS CON AIRE Y ORDEN ===== */
+        .form-group {
             display: flex;
-            flex-direction: row;
-            justify-content: space-between;
+            flex-direction: column;
+            margin-bottom: 22px; /* Espacio amplio entre filas */
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 10px; /* Separación entre el texto y su casilla */
+            font-size: 14px;
+        }
+
+        /* Estilo moderno para casillas de números y menús */
+        input[type="number"], select {
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #334155;
+            background-color: #f8fafc; /* Fondo grisáceo limpio para los inputs */
+            transition: all 0.3s ease;
+        }
+        input[type="number"]:focus, select:focus {
+            border-color: #0d47a1;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(13, 71, 161, 0.15); /* Brillo azul al hacer clic */
+            outline: none;
+        }
+
+        /* Distribución en 3 columnas perfectas sin amontonarse */
+        .form-row {
+            display: flex;
+            gap: 25px; /* Espacio holgado entre las columnas */
+            margin-bottom: 10px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* Casillas de selección (Checkboxes) con color */
+        .checkbox-group {
+            flex-direction: row !important;
             align-items: center;
-            flex-wrap: wrap;
             gap: 12px;
-            padding-top: 4px;
+            cursor: pointer;
+            margin: 15px 0;
         }
-        @media (max-width: 640px) {
-            .footer-bottom { flex-direction: column; }
+        .checkbox-group input[type="checkbox"] {
+            width: 19px;
+            height: 19px;
+            accent-color: #0d47a1; /* Pinta el cuadrito de check en azul */
+            cursor: pointer;
         }
-        .footer-contact-box {
-            background-color: #0f172a; /* bg-slate-900 */
-            padding: 4px 12px; /* py-1 px-3 */
-            border-radius: 2px; /* rounded-sm */
-            border: 1px solid #334155; /* border-slate-700 */
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            user-select: none;
         }
-        .footer-contact-box a {
-            color: #38bdf8; /* text-blue-400 */
-            text-decoration: none;
-            font-family: monospace;
+
+        /* Selector de decimales alineado horizontalmente */
+        .inline-group {
+            flex-direction: row !important;
+            align-items: center;
+            gap: 15px;
+            background-color: #f1f5f9; /* Fondo de bloque para destacar la opción */
+            padding: 12px 15px;
+            border-radius: 6px;
         }
-        .footer-contact-box a:hover { text-decoration: underline; }
+        .inline-group label {
+            margin-bottom: 0;
+        }
+        .inline-group select {
+            width: 80px;
+            text-align: center;
+            background-color: #ffffff;
+        }
 
+        /* Personalización del botón de subir archivo nativo */
+        input[type="file"] {
+            font-size: 14px;
+            color: #64748b;
+        }
+        input[type="file"]::file-selector-button {
+            background: #0d47a1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 15px;
+            transition: background 0.2s;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background: #0a3578;
+        }
 
-/* =========================================================================
-   MEJORAS DE DISEÑO RESPONSIVO PARA PANTALLAS MÓVILES
-   ========================================================================= */
-@media (max-width: 768px) {
-    /* 1. Ajustar el contenedor principal a una sola columna */
-    body {
-        padding: 10px;
-    }
-    
-    .container {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box;
-        padding: 15px !important;
-    }
+        /* ===== 6. BOTONES, CANVAS Y ADVERTENCIAS ===== */
+        .btn-principal {
+            background-color: #0d47a1;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+            margin-top: 15px;
+            box-shadow: 0 4px 6px rgba(13, 71, 161, 0.2);
+        }
+        .btn-principal:hover:not(:disabled) {
+            background-color: #0a3578;
+        }
+        .btn-principal:disabled {
+            background-color: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
 
-    /* Si usas un diseño de dos columnas (panel izquierdo / canvas derecho) */
-    .main-layout, .flex-container {
-        display: flex;
-        flex-direction: column !important;
-        gap: 15px;
-    }
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        canvas {
+            border: 2px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
 
-    /* 2. Hacer que las pestañas (Tabs) sean más fáciles de presionar con el dedo */
-    .tabs-container {
-        display: flex;
-        width: 100%;
-    }
-    
-    .tab {
-        flex: 1;
-        text-align: center;
-        padding: 12px 8px !important;
-        font-size: 14px !important;
-    }
-
-    /* 3. Hacer el Canvas responsivo para que no se desborde de la pantalla */
-    canvas {
-        width: 100% !important;
-        height: auto !important;
-        max-height: 350px; /* Evita que ocupe toda la pantalla vertical */
-        background-color: #fcfcfc;
-        border: 1px solid #ddd;
-    }
-
-    /* 4. Inputs, botones y controles a lo ancho total para mejor interacción */
-    input[type="file"], 
-    input[type="number"], 
-    input[type="text"], 
-    button {
-        width: 100% !important;
-        box-sizing: border-box;
-        margin-bottom: 10px;
-        min-height: 44px; /* Tamaño recomendado por Google para botones táctiles */
-        font-size: 14px !important;
-    }
-
-    /* Ajustar las filas de configuración que llevan texto e input a la par */
-    .control-row, .form-group {
-        display: flex;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 5px;
-    }
-    
-    .control-row input {
-        width: 100% !important;
-    }
-
-    /* 5. Optimizar alertas y textos informativos */
-    .info-box, .alert-box, #csvInfo, #dxfInfo, #csvAlerta, #dxfAlerta {
-        font-size: 13px !important;
-        padding: 10px !important;
-        word-wrap: break-word;
-    }
-}
+        /* La nota de advertencia en un color ámbar elegante */
+        .panel-advertencia {
+            background-color: #fffbeb; /* Fondo crema/amarillo suave */
+            border-left: 5px solid #d97706; /* Barra lateral naranja/ámbar de alerta */
+            padding: 18px;
+            margin-top: 25px;
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+            color: #78350f; /* Texto café oscuro legible */
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
 
-	<div class="header-institucional">
-        <h2>Polígonos y Tabla de azimut</h2>
-        <p>Polígono • Identificación y numeración de vértices<br>Tabla de azimut • Tabla a texto  •  CAD</p>
+    <div class="header-institucional">
+        <h2>Procesador de Polígonos</h2>
+        <p>Memorias Descriptivas • Archivos DXF • Cálculo de Áreas</p>
     </div>
 
     <div class="tabs-container">
         <div class="tab active" onclick="switchTab('csv')">📄 Procesar CSV</div>
-        <div class="tab" onclick="switchTab('dxf')">📐🗺️ Procesar DXF</div>
-    </div>
-	
-
- 
-<div id="tab-csv" class="content active">
-    
-    <div class="form-group full-width">
-        <label for="csvFile">Seleccionar archivo CSV sin encabezado (Num, X, Y):</label>
-        <input type="file" id="csvFile" accept=".csv,.txt">
+        <div class="tab" onclick="switchTab('dxf')">📐 Procesar DXF (Curvas)</div>
     </div>
 
-    <div class="form-group checkbox-group">
-        <input type="checkbox" id="csvInvertirSentido">
-        <label for="csvInvertirSentido">Invertir sentido de recorrido</label>
-    </div>
-
-    <div class="form-row">
+    <div id="tab-csv" class="content active">
+        
         <div class="form-group">
-            <label for="csvRadioVertices">Radio círculo:</label>
-            <input type="number" id="csvRadioVertices" step="0.01" value="1.00">
+            <label for="csvFile">Seleccionar archivo CSV sin encabezado (Num, X, Y):</label>
+            <input type="file" id="csvFile" accept=".csv,.txt">
         </div>
-        <div class="form-group">
-            <label for="csvTxtVertices">Altura de Texto en Vértice:</label>
-            <input type="number" id="csvTxtVertices" step="0.01" value="1.50">
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="csvInvertirSentido">
+            <label for="csvInvertirSentido">Invertir sentido de recorrido</label>
         </div>
-        <div class="form-group">
-            <label for="csvTxtTabla">Altura de Texto en Tabla:</label>
-            <input type="number" id="csvTxtTabla" step="0.01" value="0.80">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="csvRadioVertices">Radio círculo:</label>
+                <input type="number" id="csvRadioVertices" step="0.01" value="1.00">
+            </div>
+            <div class="form-group">
+                <label for="csvTxtVertices">Altura de Texto en Vértice:</label>
+                <input type="number" id="csvTxtVertices" step="0.01" value="1.50">
+            </div>
+            <div class="form-group">
+                <label for="csvTxtTabla">Altura de Texto en Tabla:</label>
+                <input type="number" id="csvTxtTabla" step="0.01" value="0.80">
+            </div>
         </div>
-    </div>
 
-    <div class="form-group inline-group">
-        <label for="csvDecimalesSegundos">Cantidad de Decimales para los Segundos:</label>
-        <select id="csvDecimalesSegundos">
-            <option value="0" selected>0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-        </select>
-    </div>
-
-    <div class="form-group checkbox-group">
-        <input type="checkbox" id="csvGenerarTextoDoc" checked>
-        <label for="csvGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
-    </div>
-
-    <button id="csvDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
-    
-    <div id="csvAlerta" class="alerta"></div>
-    <div id="csvInfo" class="panel" style="display:none;"></div>
-    
-    <div class="canvas-container">
-        <canvas id="csvCanvas" width="500" height="450"></canvas>
-    </div>
-</div>
-
-<div id="tab-dxf" class="content">
-    
-    <div class="form-group full-width">
-        <label for="dxfFile">Seleccionar DXF (LWPOLYLINE):</label>
-        <input type="file" id="dxfFile" accept=".dxf">
-    </div>
-
-    <div class="form-group checkbox-group">
-        <input type="checkbox" id="dxfInvertirSentido">
-        <label for="dxfInvertirSentido">Invertir sentido de recorrido</label>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group">
-            <label for="dxfRadioVertices">Radio círculo:</label>
-            <input type="number" id="dxfRadioVertices" step="0.01" value="1.00">
+        <div class="form-group inline-group">
+            <label for="csvDecimalesSegundos">Cantidad de Decimales para los Segundos:</label>
+            <select id="csvDecimalesSegundos">
+                <option value="0" selected>0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
         </div>
-        <div class="form-group">
-            <label for="dxfTxtVertices">Altura de Texto en Vértice:</label>
-            <input type="number" id="dxfTxtVertices" step="0.01" value="1.50">
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="csvGenerarTextoDoc" checked>
+            <label for="csvGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
         </div>
-        <div class="form-group">
-            <label for="dxfTxtTabla">Altura de Texto en Tabla:</label>
-            <input type="number" id="dxfTxtTabla" step="0.01" value="0.80">
+
+        <button id="csvDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
+        
+        <div id="csvAlerta" class="alerta"></div>
+        <div id="csvInfo" class="panel" style="display:none;"></div>
+        
+        <div class="canvas-container">
+            <canvas id="csvCanvas" width="500" height="450"></canvas>
         </div>
     </div>
 
-    <div class="form-group inline-group">
-        <label for="dxfDecimalesSegundos">Cantidad de Decimales para los Segundos:</label>
-        <select id="dxfDecimalesSegundos">
-            <option value="0" selected>0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-        </select>
-    </div>
+    <div id="tab-dxf" class="content">
+        
+        <div class="form-group">
+            <label for="dxfFile">Seleccionar DXF (LWPOLYLINE):</label>
+            <input type="file" id="dxfFile" accept=".dxf">
+        </div>
 
-    <div class="form-group checkbox-group">
-        <input type="checkbox" id="dxfGenerarTextoDoc" checked>
-        <label for="dxfGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
-    </div>
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="dxfInvertirSentido">
+            <label for="dxfInvertirSentido">Invertir sentido de recorrido</label>
+        </div>
 
-    <button id="dxfDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
-    
-    <div id="dxfAlerta" class="alerta"></div>
-    <div id="dxfInfo" class="panel" style="display:none;"></div>
-    
-    <div class="canvas-container">
-        <canvas id="dxfCanvas" width="500" height="450"></canvas>
-    </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="dxfRadioVertices">Radio círculo:</label>
+                <input type="number" id="dxfRadioVertices" step="0.01" value="1.00">
+            </div>
+            <div class="form-group">
+                <label for="dxfTxtVertices">Altura de Texto en Vértice:</label>
+                <input type="number" id="dxfTxtVertices" step="0.01" value="1.50">
+            </div>
+            <div class="form-group">
+                <label for="dxfTxtTabla">Altura de Texto en Tabla:</label>
+                <input type="number" id="dxfTxtTabla" step="0.01" value="0.80">
+            </div>
+        </div>
 
-    <div class="panel-advertencia">
-        <strong>⚠️ Nota de visualización:</strong> Debido a tolerancias de redondeo y diferencias en la interpretación matemática de vectores cortos (como ochavos o curvas de esquina), el visor web interactivo puede mostrar de forma eventual arcos orientados hacia el interior. Proceda con la descarga del archivo <strong>.dxf</strong>; los parámetros topológicos nativos se exportan de forma correcta y se mantendrán fieles a la geometría original en AutoCAD.
+        <div class="form-group inline-group">
+            <label for="dxfDecimalesSegundos">Cantidad de Decimales para los Segundos:</label>
+            <select id="dxfDecimalesSegundos">
+                <option value="0" selected>0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="dxfGenerarTextoDoc" checked>
+            <label for="dxfGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
+        </div>
+
+        <button id="dxfDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
+        
+        <div id="dxfAlerta" class="alerta"></div>
+        <div id="dxfInfo" class="panel" style="display:none;"></div>
+        
+        <div class="canvas-container">
+            <canvas id="dxfCanvas" width="500" height="450"></canvas>
+        </div>
+
+        <div class="panel-advertencia">
+            <strong>⚠️ Nota de visualización:</strong> Debido a tolerancias de redondeo y diferencias en la interpretación matemática de vectores cortos (como ochavos o curvas de esquina), el visor web interactivo puede mostrar de forma eventual arcos orientados hacia el interior. Proceda con la descarga del archivo <strong>.dxf</strong>; los parámetros topológicos nativos se exportan de forma correcta y se mantendrán fieles a la geometría original en AutoCAD.
+        </div>
     </div>
-</div>
- 
 
 	
   
