@@ -67,7 +67,7 @@
         /* ===== 4. TARJETA DE CONTENIDO CONTRASTADA ===== */
         .content {
             display: none; /* Ocultas por defecto */
-            background: #ffffff; /* Fondo blanco puro para resaltar del fondo gris */
+            background: #f8fafc; /* Fondo blanco puro para resaltar del fondo gris */
             padding: 40px;
             border-radius: 0 0 8px 8px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Sombra suave de elevación */
@@ -109,14 +109,37 @@
             outline: none;
         }
 
-        /* Distribución en 3 columnas perfectas sin amontonarse */
+        /* Distribución en 3 columnas en computadora */
         .form-row {
             display: flex;
-            gap: 25px; /* Espacio holgado entre las columnas */
+            gap: 25px; 
             margin-bottom: 10px;
         }
         .form-row .form-group {
             flex: 1;
+        }
+
+        /* ======================================================= */
+        /* TRUCO PARA MÓVILES: Se activa en pantallas pequeñas     */
+        /* ======================================================= */
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column !important; /* Fuerza a que vayan uno abajo del otro */
+                gap: 15px; /* Reduce un poco el espacio para optimizar pantalla */
+            }
+            
+            .content {
+                padding: 20px; /* Reduce los márgenes de la tarjeta para ganar espacio */
+            }
+
+            .inline-group {
+                flex-direction: column !important; /* El selector de decimales también se acomoda vertical */
+                align-items: flex-start !important;
+            }
+            
+            .inline-group select {
+                width: 100% !important; /* El selector ocupa todo el ancho en el celular */
+            }
         }
 
         /* Casillas de selección (Checkboxes) con color */
