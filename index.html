@@ -425,12 +425,12 @@
 	
 <footer class="site-footer">
         <div class="footer-container">
-            <p>Procesamiento Avanzado de Datos Topográficos: Generación de Archivos DXF bajo Estándares CAD (Unidades en Metros) e Integración de Curvas (Bulbos)</p>
+            <p>Procesamiento Avanzado de Datos Topográficos: Generación de Archivos DXF bajo Estándares CAD (Unidades en Metros)</p>
             
             <hr class="footer-hr">
             
             <p class="footer-disclaimer">
-                <strong>AVISO DE EXENCIÓN DE RESPONSABILIDAD:</strong> Este servicio web de procesamiento de polígonos y generación de memorias descriptivas se proporciona de forma gratuita y con fines exclusivamente informativos, académicos y de utilidad pública. El autor no asume ninguna responsabilidad legal, civil o administrativa por la exactitud, integridad o idoneidad técnica de los archivos DXF, cálculos de áreas o minutas de texto generadas. Es responsabilidad exclusiva del profesional o usuario final contrastar, verificar y validar los resultados frente a los levantamientos de campo y las normativas jurídicas o catastrales vigentes.
+                <strong>AVISO DE EXENCIÓN DE RESPONSABILIDAD:</strong> Este servicio web de procesamiento de polígonos, identificación y numeración de vértices, generación de tabla de azimut y generación de texto se proporciona de forma gratuita y con fines exclusivamente informativos, académicos y de utilidad pública. El autor no asume ninguna responsabilidad legal, civil o administrativa por la exactitud, integridad o idoneidad técnica de los productos generados: archivos .DXF o .DOC con el polígono y el texto generados. Es responsabilidad exclusiva del profesional o usuario final contrastar, verificar y validar los resultados frente a los levantamientos de campo y las normativas correspondientes vigentes.
             </p>
             
             <hr class="footer-hr">
@@ -449,6 +449,9 @@
   
   
 <script>
+
+// Script para inicializar dinámicamente el año del Footer institucional
+        document.getElementById('anioDinamicoFooter').innerText = new Date().getFullYear();
 
 // --- CONFIGURACIÓN DE CONEXIÓN AL BACKEND ---
         const BACKEND_URL = "https://poligono-azimut-backend.onrender.com";
