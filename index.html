@@ -247,6 +247,60 @@
             color: #78350f; /* Texto café oscuro legible */
             line-height: 1.6;
         }
+
+				/* --- ESTILOS ADAPTADOS PARA EL FOOTER INSTITUCIONAL --- */
+        .site-footer {
+            background-color: #1e293b; /* bg-slate-800 */
+            color: #94a3b8; /* text-slate-400 */
+            padding: 24px 16px; /* py-6 px-4 */
+            font-size: 12px; /* text-xs */
+            border-top: 1px solid #334155; /* border-slate-700 */
+            margin-top: 40px;
+        }
+        .footer-container {
+            max-width: 896px; /* max-w-4xl */
+            margin: 0 auto;
+            text-align: center;
+        }
+        .footer-container p { margin: 6px 0; }
+        .footer-hr {
+            border: 0;
+            border-top: 1px solid #334155; /* border-slate-700 */
+            margin: 12px 0;
+        }
+        .footer-disclaimer {
+            color: #64748b; /* text-slate-500 */
+            font-weight: 500;
+            line-height: 1.625; /* leading-relaxed */
+        }
+        .footer-bottom {
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 11px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-top: 4px;
+        }
+        @media (max-width: 640px) {
+            .footer-bottom { flex-direction: column; }
+        }
+        .footer-contact-box {
+            background-color: #0f172a; /* bg-slate-900 */
+            padding: 4px 12px; /* py-1 px-3 */
+            border-radius: 2px; /* rounded-sm */
+            border: 1px solid #334155; /* border-slate-700 */
+        }
+        .footer-contact-box a {
+            color: #38bdf8; /* text-blue-400 */
+            text-decoration: none;
+            font-family: monospace;
+        }
+        .footer-contact-box a:hover { text-decoration: underline; }
+		
     </style>
 </head>
 <body>
@@ -367,20 +421,26 @@
         </div>
     </div>
 
-	<footer>
+
+	
+<footer class="site-footer">
         <div class="footer-container">
-            <p>Parámetros Oficiales GTM: Meridiano Central: -90.5° | Factor de Escala: 0.9998 | Falso Este: 500,000m | Falso Norte: 0m</p>
-            <hr>
-            <p class="disclaimer">
-                <strong>AVISO DE EXENCIÓN DE RESPONSABILIDAD:</strong> Este servicio web de conversión cartográfica se proporciona de forma gratuita y con fines exclusivamente informativos, académicos y de utilidad pública. El autor no asume ninguna responsabilidad legal, civil o administrativa por la exactitud, integridad o idoneidad técnica de los datos generados. Es responsabilidad exclusiva del usuario final contrastar y verificar los resultados frente a los marcos geodésicos de referencia oficiales correspondientes.
+            <p>Procesamiento Avanzado de Datos Topográficos: Generación de Archivos DXF bajo Estándares CAD (Unidades en Metros) e Integración de Curvas (Bulbos)</p>
+            
+            <hr class="footer-hr">
+            
+            <p class="footer-disclaimer">
+                <strong>AVISO DE EXENCIÓN DE RESPONSABILIDAD:</strong> Este servicio web de procesamiento de polígonos y generación de memorias descriptivas se proporciona de forma gratuita y con fines exclusivamente informativos, académicos y de utilidad pública. El autor no asume ninguna responsabilidad legal, civil o administrativa por la exactitud, integridad o idoneidad técnica de los archivos DXF, cálculos de áreas o minutas de texto generadas. Es responsabilidad exclusiva del profesional o usuario final contrastar, verificar y validar los resultados frente a los levantamientos de campo y las normativas jurídicas o catastrales vigentes.
             </p>
-            <hr>
+            
+            <hr class="footer-hr">
+            
             <div class="footer-bottom">
-                <span>🇬🇹 Servicio patrocinado por <strong>MSc Aldo González</strong></span>
-                <span class="badge-email">
+                <span>🇬🇹 Servicio desarrollado por <strong>MSc Aldo González</strong></span>
+                <span class="footer-contact-box">
                     📧 Soporte y Contacto: <a href="mailto:conversorgtm@gmail.com">conversorgtm@gmail.com</a>
                 </span>
-                <span>© 2026 Todos los derechos reservados.</span>
+                <span>&copy; <span id="anioDinamicoFooter"></span> Todos los derechos reservados.</span>
             </div>
         </div>
     </footer>
