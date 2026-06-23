@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procesador de Polígonos</title>
+    <title>Polígonos y Tabla de Azimut</title>
     
     <style>
         /* ===== 1. ESTILOS GENERALES ===== */
@@ -252,13 +252,13 @@
 <body>
 
     <div class="header-institucional">
-        <h2>Procesador de Polígonos</h2>
-        <p>Memorias Descriptivas • Archivos DXF • Cálculo de Áreas</p>
+        <h2>Polígonos y Tabla de azimut</h2>
+        <p>Polígono • Identificación y numeración de vértices<br>Tabla de azimut • Tabla a texto  •  CAD</p>
     </div>
 
     <div class="tabs-container">
         <div class="tab active" onclick="switchTab('csv')">📄 Procesar CSV</div>
-        <div class="tab" onclick="switchTab('dxf')">📐 Procesar DXF (Curvas)</div>
+        <div class="tab" onclick="switchTab('dxf')">📐 Procesar DXF</div>
     </div>
 
     <div id="tab-csv" class="content active">
@@ -315,7 +315,7 @@
     <div id="tab-dxf" class="content">
         
         <div class="form-group">
-            <label for="dxfFile">Seleccionar DXF (LWPOLYLINE):</label>
+            <label for="dxfFile">Seleccionar DXF (Polilínea):</label>
             <input type="file" id="dxfFile" accept=".dxf">
         </div>
 
