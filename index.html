@@ -6,7 +6,55 @@
     <title>Polígonos y Tabla de Azimut</title>
     <style>
         body { font-family: sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; color: #333; }
-        
+
+
+		/* Estilo del botón Descargar */
+.btn-principal {
+    background-color: #0d47a1;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s, opacity 0.2s;
+    margin-top: 10px;
+}
+
+.btn-principal:hover:not(:disabled) {
+    background-color: #0a3578;
+}
+
+/* Estado deshabilitado del botón */
+.btn-principal:disabled {
+    background-color: #cbd5e1;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* Centrado del lienzo de dibujo */
+.canvas-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* La Nota de Advertencia en DXF con diseño moderno */
+.panel-advertencia {
+    background-color: #fffbeb;
+    border-left: 4px solid #d97706;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 0 6px 6px 0;
+    font-size: 13.5px;
+    color: #78350f;
+    line-height: 1.6;
+    text-align: left;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+		
         /* Encabezado Institucional Azul */
         .header-institucional {
             background-color: #0e0eab;
@@ -219,66 +267,112 @@
 	
 
  
+<div id="tab-csv" class="content active">
+    
+    <div class="form-group full-width">
+        <label for="csvFile">Seleccionar archivo CSV sin encabezado (Num, X, Y):</label>
+        <input type="file" id="csvFile" accept=".csv,.txt">
+    </div>
 
-    <div id="tab-csv" class="content active">
-        <label>Seleccionar archivo CSV sin encabezado (Num, X, Y): </label>
-        <input type="file" id="csvFile" accept=".csv,.txt"><br><br>
-        
-        <input type="checkbox" id="csvInvertirSentido"> Invertir sentido de recorrido<br><br>
+    <div class="form-group checkbox-group">
+        <input type="checkbox" id="csvInvertirSentido">
+        <label for="csvInvertirSentido">Invertir sentido de recorrido</label>
+    </div>
 
-        <label>Radio círculo: </label> <input type="number" id="csvRadioVertices" step="0.01" value="1.00">
-        <label>Altura de Texto en Vértice: </label> <input type="number" id="csvTxtVertices" step="0.01" value="1.50"><br><br>
-        <label>Altura de Texto en Tabla: </label> <input type="number" id="csvTxtTabla" step="0.01" value="0.80"><br><br>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="csvRadioVertices">Radio círculo:</label>
+            <input type="number" id="csvRadioVertices" step="0.01" value="1.00">
+        </div>
+        <div class="form-group">
+            <label for="csvTxtVertices">Altura de Texto en Vértice:</label>
+            <input type="number" id="csvTxtVertices" step="0.01" value="1.50">
+        </div>
+        <div class="form-group">
+            <label for="csvTxtTabla">Altura de Texto en Tabla:</label>
+            <input type="number" id="csvTxtTabla" step="0.01" value="0.80">
+        </div>
+    </div>
 
-		<label>Cantidad de Decimales para los Segundos: </label>
-        <select id="csvDecimalesSegundos" style="padding: 4px; border-radius: 4px; border: 1px solid #ccc; width: 60px; text-align: center; margin-right: 15px;">
+    <div class="form-group inline-group">
+        <label for="csvDecimalesSegundos">Cantidad de Decimales para los Segundos:</label>
+        <select id="csvDecimalesSegundos">
             <option value="0" selected>0</option>
             <option value="1">1</option>
             <option value="2">2</option>
         </select>
-        <br><br>
+    </div>
 
-        <input type="checkbox" id="csvGenerarTextoDoc" checked> Generar Texto de la Tabla de Azimut (.doc)
-        <br><br>
-        <button id="csvDownloadBtn" disabled>Descargar Archivos</button>
-        
-        <div id="csvAlerta" class="alerta"></div>
-        <div id="csvInfo" class="panel" style="display:none;"></div>
+    <div class="form-group checkbox-group">
+        <input type="checkbox" id="csvGenerarTextoDoc" checked>
+        <label for="csvGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
+    </div>
+
+    <button id="csvDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
+    
+    <div id="csvAlerta" class="alerta"></div>
+    <div id="csvInfo" class="panel" style="display:none;"></div>
+    
+    <div class="canvas-container">
         <canvas id="csvCanvas" width="500" height="450"></canvas>
     </div>
+</div>
 
-    <div id="tab-dxf" class="content">
-        <label>Seleccionar DXF (LWPOLYLINE): </label>
-        <input type="file" id="dxfFile" accept=".dxf"><br><br>
-        
-        <input type="checkbox" id="dxfInvertirSentido"> Invertir sentido de recorrido<br><br>
+<div id="tab-dxf" class="content">
+    
+    <div class="form-group full-width">
+        <label for="dxfFile">Seleccionar DXF (LWPOLYLINE):</label>
+        <input type="file" id="dxfFile" accept=".dxf">
+    </div>
 
-        <label>Radio círculo: </label> <input type="number" id="dxfRadioVertices" step="0.01" value="1.00"><br><br>
-        <label>Altura de Texto en Vértice: </label> <input type="number" id="dxfTxtVertices" step="0.01" value="1.50"><br><br>
-        <label>Altura de Texto en Tabla: </label> <input type="number" id="dxfTxtTabla" step="0.01" value="0.80"><br><br>
+    <div class="form-group checkbox-group">
+        <input type="checkbox" id="dxfInvertirSentido">
+        <label for="dxfInvertirSentido">Invertir sentido de recorrido</label>
+    </div>
 
-		<label>Cantidad de Decimales para los Segundos: </label>
-        <select id="dxfDecimalesSegundos" style="padding: 4px; border-radius: 4px; border: 1px solid #ccc; width: 60px; text-align: center; margin-right: 15px;">
+    <div class="form-row">
+        <div class="form-group">
+            <label for="dxfRadioVertices">Radio círculo:</label>
+            <input type="number" id="dxfRadioVertices" step="0.01" value="1.00">
+        </div>
+        <div class="form-group">
+            <label for="dxfTxtVertices">Altura de Texto en Vértice:</label>
+            <input type="number" id="dxfTxtVertices" step="0.01" value="1.50">
+        </div>
+        <div class="form-group">
+            <label for="dxfTxtTabla">Altura de Texto en Tabla:</label>
+            <input type="number" id="dxfTxtTabla" step="0.01" value="0.80">
+        </div>
+    </div>
+
+    <div class="form-group inline-group">
+        <label for="dxfDecimalesSegundos">Cantidad de Decimales para los Segundos:</label>
+        <select id="dxfDecimalesSegundos">
             <option value="0" selected>0</option>
             <option value="1">1</option>
             <option value="2">2</option>
         </select>
-        <br><br>
-		
-
-		
-        <input type="checkbox" id="dxfGenerarTextoDoc" checked> Generar Texto de la Tabla de Azimut (.doc)
-        <br><br>
-        <button id="dxfDownloadBtn" disabled>Descargar Archivos</button>
-        
-        <div id="dxfAlerta" class="alerta"></div>
-        <div id="dxfInfo" class="panel" style="display:none;"></div>
-        <canvas id="dxfCanvas" width="500" height="450"></canvas>
-
-		<div style="background-color: #fff9e6; border-left: 5px solid #ffcc00; padding: 15px; margin-top: 15px; border-radius: 4px; font-family: sans-serif; font-size: 13.5px; color: #665200; line-height: 1.5; text-align: left;">
-		    <strong>⚠️ Nota de visualización:</strong> Debido a tolerancias de redondeo y diferencias en la interpretación matemática de vectores cortos (como ochavos o curvas de esquina), el visor web interactivo puede mostrar de forma eventual arcos orientados hacia el interior. Proceda con la descarga del archivo <strong>.dxf</strong>; los parámetros topológicos nativos se exportan de forma correcta y se mantendrán fieles a la geometría original en AutoCAD.
-		</div>
     </div>
+
+    <div class="form-group checkbox-group">
+        <input type="checkbox" id="dxfGenerarTextoDoc" checked>
+        <label for="dxfGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
+    </div>
+
+    <button id="dxfDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
+    
+    <div id="dxfAlerta" class="alerta"></div>
+    <div id="dxfInfo" class="panel" style="display:none;"></div>
+    
+    <div class="canvas-container">
+        <canvas id="dxfCanvas" width="500" height="450"></canvas>
+    </div>
+
+    <div class="panel-advertencia">
+        <strong>⚠️ Nota de visualización:</strong> Debido a tolerancias de redondeo y diferencias en la interpretación matemática de vectores cortos (como ochavos o curvas de esquina), el visor web interactivo puede mostrar de forma eventual arcos orientados hacia el interior. Proceda con la descarga del archivo <strong>.dxf</strong>; los parámetros topológicos nativos se exportan de forma correcta y se mantendrán fieles a la geometría original en AutoCAD.
+    </div>
+</div>
+ 
 
 	
   
