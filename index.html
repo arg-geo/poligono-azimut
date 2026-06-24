@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polígonos y Tabla de Azimut</title>
+    
+    <style>
+        /* ===== 1. ESTILOS GENERALES ===== */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f0f4f8; /* Fondo general gris-azul claro que da contraste */
+            color: #333; 
+        }
+
+        /* ===== 2. ENCABEZADO INSTITUCIONAL ===== */
+        .header-institucional {
+            background-color: #0d47a1; /* Azul Marino Intenso */
+            color: #ffffff;
+            text-align: center;
+            padding: 30px 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header-institucional h2 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .header-institucional p {
+            margin: 0;
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        /* ===== 3. CONTENEDOR DE PESTAÑAS (TABS) ===== */
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            background-color: #ffffff;
+            border-bottom: 2px solid #e2e8f0;
+            max-width: 800px;
+            margin: 30px auto 0 auto;
+            border-radius: 8px 8px 0 0;
+        }
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+        .tab:hover {
+            color: #0d47a1;
+            background-color: #f8fafc;
+        }
+        .tab.active {
+            color: #0d47a1;
+            border-bottom: 3px solid #0d47a1; /* Línea azul en la pestaña activa */
+            background-color: #ffffff;
+        }
+
+        /* ===== 4. TARJETA DE CONTENIDO CONTRASTADA ===== */
+        .content {
+            display: none; /* Ocultas por defecto */
+            background: #f8fafc; /* Fondo blanco puro para resaltar del fondo gris */
+            padding: 40px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Sombra suave de elevación */
+            max-width: 800px;
+            margin: 0 auto 50px auto;
+            box-sizing: border-box;
+        }
+        .content.active { 
+            display: block; /* Solo se muestra la activa */
+        }
+
+        /* ===== 5. FORMULARIOS CON AIRE Y ORDEN ===== */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 22px; /* Espacio amplio entre filas */
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 10px; /* Separación entre el texto y su casilla */
+            font-size: 14px;
+        }
+
+        /* Estilo moderno para casillas de números y menús */
+        input[type="number"], select {
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #334155;
+            background-color: #f8fafc; /* Fondo grisáceo limpio para los inputs */
+            transition: all 0.3s ease;
+        }
+        input[type="number"]:focus, select:focus {
+            border-color: #0d47a1;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(13, 71, 161, 0.15); /* Brillo azul al hacer clic */
+            outline: none;
+        }
+
+        /* Distribución en 3 columnas en computadora */
+        .form-row {
+            display: flex;
+            gap: 25px; 
+            margin-bottom: 10px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* ======================================================= */
+        /* TRUCO PARA MÓVILES: Se activa en pantallas pequeñas     */
+        /* ======================================================= */
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column !important; /* Fuerza a que vayan uno abajo del otro */
+                gap: 15px; /* Reduce un poco el espacio para optimizar pantalla */
+            }
+            
+            .content {
+                padding: 20px; /* Reduce los márgenes de la tarjeta para ganar espacio */
+            }
+
+            .inline-group {
+                flex-direction: column !important; /* El selector de decimales también se acomoda vertical */
+                align-items: flex-start !important;
+            }
+            
+            .inline-group select {
+                width: 100% !important; /* El selector ocupa todo el ancho en el celular */
+            }
+        }
+
+        /* Casillas de selección (Checkboxes) con color */
+        .checkbox-group {
+            flex-direction: row !important;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            margin: 15px 0;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 19px;
+            height: 19px;
+            accent-color: #0d47a1; /* Pinta el cuadrito de check en azul */
+            cursor: pointer;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Selector de decimales alineado horizontalmente */
+        .inline-group {
+            flex-direction: row !important;
+            align-items: center;
+            gap: 15px;
+            background-color: #f1f5f9; /* Fondo de bloque para destacar la opción */
+            padding: 12px 15px;
+            border-radius: 6px;
+        }
+        .inline-group label {
+            margin-bottom: 0;
+        }
+        .inline-group select {
+            width: 80px;
+            text-align: center;
+            background-color: #ffffff;
+        }
+
+        /* Personalización del botón de subir archivo nativo */
+        input[type="file"] {
+            font-size: 14px;
+            color: #64748b;
+        }
+        input[type="file"]::file-selector-button {
+            background: #0d47a1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 15px;
+            transition: background 0.2s;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background: #0a3578;
+        }
+
+        /* ===== 6. BOTONES, CANVAS Y ADVERTENCIAS ===== */
+        .btn-principal {
+            background-color: #0d47a1;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+            margin-top: 15px;
+            box-shadow: 0 4px 6px rgba(13, 71, 161, 0.2);
+        }
+        .btn-principal:hover:not(:disabled) {
+            background-color: #0a3578;
+        }
+        .btn-principal:disabled {
+            background-color: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        canvas {
+            border: 2px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        /* La nota de advertencia en un color ámbar elegante */
+        .panel-advertencia {
+            background-color: #fffbeb; /* Fondo crema/amarillo suave */
+            border-left: 5px solid #d97706; /* Barra lateral naranja/ámbar de alerta */
+            padding: 18px;
+            margin-top: 25px;
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+            color: #78350f; /* Texto café oscuro legible */
+            line-height: 1.6;
+        }
+
+				/* --- ESTILOS ADAPTADOS PARA EL FOOTER INSTITUCIONAL --- */
+        .site-footer {
+            background-color: #1e293b; /* bg-slate-800 */
+            color: #94a3b8; /* text-slate-400 */
+            padding: 24px 16px; /* py-6 px-4 */
+            font-size: 12px; /* text-xs */
+            border-top: 1px solid #334155; /* border-slate-700 */
+            margin-top: 40px;
+        }
+        .footer-container {
+            max-width: 896px; /* max-w-4xl */
+            margin: 0 auto;
+            text-align: center;
+        }
+        .footer-container p { margin: 6px 0; }
+        .footer-hr {
+            border: 0;
+            border-top: 1px solid #334155; /* border-slate-700 */
+            margin: 12px 0;
+        }
+        .footer-disclaimer {
+            color: #64748b; /* text-slate-500 */
+            font-weight: 500;
+            line-height: 1.625; /* leading-relaxed */
+        }
+        .footer-bottom {
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 11px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-top: 4px;
+        }
+        @media (max-width: 640px) {
+            .footer-bottom { flex-direction: column; }
+        }
+        .footer-contact-box {
+            background-color: #0f172a; /* bg-slate-900 */
+            padding: 4px 12px; /* py-1 px-3 */
+            border-radius: 2px; /* rounded-sm */
+            border: 1px solid #334155; /* border-slate-700 */
+        }
+        .footer-contact-box a {
+            color: #38bdf8; /* text-blue-400 */
+            text-decoration: none;
+            font-family: monospace;
+        }
+        .footer-contact-box a:hover { text-decoration: underline; }
+		
+    </style>
+</head>
+<body>
+
+    <div class="header-institucional">
+        <h2>Polígonos y Tabla de azimut</h2>
+        <p>Polígono • Identificación y numeración de vértices<br>Tabla de azimut • Tabla a texto  •  CAD</p>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tab active" onclick="switchTab('csv')">📄 Procesar CSV</div>
+        <div class="tab" onclick="switchTab('dxf')">📐 Procesar DXF</div>
+    </div>
+
+    <div id="tab-csv" class="content active">
+        
+        <div class="form-group">
+            <label for="csvFile">Seleccionar archivo CSV sin encabezado (Num, X, Y):</label>
+            <input type="file" id="csvFile" accept=".csv,.txt">
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="csvInvertirSentido">
+            <label for="csvInvertirSentido">Invertir sentido de recorrido</label>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="csvRadioVertices">Radio círculo:</label>
+                <input type="number" id="csvRadioVertices" step="0.01" value="1.00">
+            </div>
+            <div class="form-group">
+                <label for="csvTxtVertices">Altura de Texto en Vértice:</label>
+                <input type="number" id="csvTxtVertices" step="0.01" value="1.50">
+            </div>
+            <div class="form-group">
+                <label for="csvTxtTabla">Altura de Texto en Tabla:</label>
+                <input type="number" id="csvTxtTabla" step="0.01" value="0.80">
+            </div>
+        </div>
+
+        <div class="form-group inline-group">
+            <label for="csvDecimalesSegundos">Cantidad de Decimales para los Segundos:</label>
+            <select id="csvDecimalesSegundos">
+                <option value="0" selected>0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="csvGenerarTextoDoc" checked>
+            <label for="csvGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
+        </div>
+
+        <button id="csvDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
+        
+        <div id="csvAlerta" class="alerta"></div>
+        <div id="csvInfo" class="panel" style="display:none;"></div>
+        
+        <div class="canvas-container">
+            <canvas id="csvCanvas" width="500" height="450"></canvas>
+        </div>
+    </div>
+
+    <div id="tab-dxf" class="content">
+        
+        <div class="form-group">
+            <label for="dxfFile">Seleccionar DXF (Polilínea):</label>
+            <input type="file" id="dxfFile" accept=".dxf">
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="dxfInvertirSentido">
+            <label for="dxfInvertirSentido">Invertir sentido de recorrido</label>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="dxfRadioVertices">Radio círculo:</label>
+                <input type="number" id="dxfRadioVertices" step="0.01" value="1.00">
+            </div>
+            <div class="form-group">
+                <label for="dxfTxtVertices">Altura de Texto en Vértice:</label>
+                <input type="number" id="dxfTxtVertices" step="0.01" value="1.50">
+            </div>
+            <div class="form-group">
+                <label for="dxfTxtTabla">Altura de Texto en Tabla:</label>
+                <input type="number" id="dxfTxtTabla" step="0.01" value="0.80">
+            </div>
+        </div>
+
+        <div class="form-group inline-group">
+            <label for="dxfDecimalesSegundos">Cantidad de Decimales para los Segundos:</label>
+            <select id="dxfDecimalesSegundos">
+                <option value="0" selected>0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="dxfGenerarTextoDoc" checked>
+            <label for="dxfGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
+        </div>
+
+        <button id="dxfDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
+        
+        <div id="dxfAlerta" class="alerta"></div>
+        <div id="dxfInfo" class="panel" style="display:none;"></div>
+        
+        <div class="canvas-container">
+            <canvas id="dxfCanvas" width="500" height="450"></canvas>
+        </div>
+
+        <div class="panel-advertencia">
+            <strong>⚠️ Nota de visualización:</strong> Debido a tolerancias de redondeo y diferencias en la interpretación matemática de vectores cortos (como ochavos o curvas de esquina), el visor web interactivo puede mostrar de forma eventual arcos orientados hacia el interior. Proceda con la descarga del archivo <strong>.dxf</strong>; los parámetros topológicos nativos se exportan de forma correcta y se mantendrán fieles a la geometría original en AutoCAD.
+        </div>
+    </div>
+
+
+	
+<footer class="site-footer">
+        <div class="footer-container">
+            <p>Procesamiento Avanzado de Datos Topográficos: Generación de Archivos DXF bajo Estándares CAD (Unidades en Metros)</p>
+            
+            <hr class="footer-hr">
+            
+            <p class="footer-disclaimer">
+                <strong>AVISO DE EXENCIÓN DE RESPONSABILIDAD:</strong> Este servicio web de procesamiento de polígonos, identificación y numeración de vértices, generación de tabla de azimut y generación de texto se proporciona de forma gratuita y con fines exclusivamente informativos, académicos y de utilidad pública. El autor no asume ninguna responsabilidad legal, civil o administrativa por la exactitud, integridad o idoneidad técnica de los productos generados: archivos .DXF o .DOC con el polígono y el texto generados. Es responsabilidad exclusiva del profesional o usuario final contrastar, verificar y validar los resultados frente a los levantamientos de campo y las normativas correspondientes vigentes.
+            </p>
+            
+            <hr class="footer-hr">
+            
+            <div class="footer-bottom">
+                <span>🇬🇹 Servicio desarrollado por <strong>MSc Aldo González</strong></span>
+                <span class="footer-contact-box">
+                    📧 Soporte y Contacto: <a href="mailto:conversorgtm@gmail.com">conversorgtm@gmail.com</a>
+                </span>
+                <span>&copy; <span id="anioDinamicoFooter"></span> Todos los derechos reservados.</span>
+            </div>
+        </div>
+    </footer>
+	
+  
+  
+  
+<script>
+
+// Script para inicializar dinámicamente el año del Footer institucional
+        document.getElementById('anioDinamicoFooter').innerText = new Date().getFullYear();
+
+// --- CONFIGURACIÓN DE CONEXIÓN AL BACKEND ---
+        const BACKEND_URL = "https://poligono-azimut-backend.onrender.com";
+        const LIMITE_AREA_MAX = 300; 
+
+        let csvVerticesOriginales = [];
+        let csvVertices = [];
+        let dxfVerticesOriginales = [];
+        let dxfVertices = [];
+
+        // Escuchas de Eventos de la Interfaz
+        document.getElementById('csvFile').addEventListener('change', leerCSV);
+        document.getElementById('csvDownloadBtn').addEventListener('click', descargarCSV);
+        document.getElementById('csvRadioVertices').addEventListener('input', cambiarSentidoCSV);
+        document.getElementById('csvTxtVertices').addEventListener('input', cambiarSentidoCSV);
+        document.getElementById('csvTxtTabla').addEventListener('input', cambiarSentidoCSV);
+        document.getElementById('csvInvertirSentido').addEventListener('change', cambiarSentidoCSV);
+
+		document.getElementById('csvDecimalesSegundos').addEventListener('change', cambiarSentidoCSV);
+	    document.getElementById('dxfDecimalesSegundos').addEventListener('change', cambiarSentidoDXF);
+
+        document.getElementById('dxfFile').addEventListener('change', leerDXF);
+        document.getElementById('dxfDownloadBtn').addEventListener('click', descargarDXF);
+        document.getElementById('dxfRadioVertices').addEventListener('input', cambiarSentidoDXF);
+        document.getElementById('dxfTxtVertices').addEventListener('input', cambiarSentidoDXF);
+        document.getElementById('dxfTxtTabla').addEventListener('input', cambiarSentidoDXF);
+        document.getElementById('dxfInvertirSentido').addEventListener('change', cambiarSentidoDXF);
+
+        function switchTab(tipo) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            if(tipo === 'csv') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('tab-csv').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('tab-dxf').classList.add('active');
+            }
+        }
+
+        // --- UTILERÍAS LOCALES DEL FRONTEND ---
+        function globalFormatearNumero(n) { return n.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function obtenerDistancia(p1, p2) { return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)); }
+        
+        function triggerDescarga(contenido, file, mime) {
+            const blob = new Blob([contenido], { type: mime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = file;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a); URL.revokeObjectURL(url);
+        }
+
+        function sugerirEscalaValores(arreglo, prefixTab) {
+            const xs = arreglo.map(v => v.x), ys = arreglo.map(v => v.y);
+            const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+            const tamaño = Math.max(maxX - minX, maxY - minY);
+            
+            document.getElementById(`${prefixTab}RadioVertices`).value = (tamaño * 0.010).toFixed(2);
+            document.getElementById(`${prefixTab}TxtVertices`).value = (tamaño * 0.016).toFixed(2);
+            document.getElementById(`${prefixTab}TxtTabla`).value = (tamaño * 0.008).toFixed(2);
+        }
+
+        // =========================================================================
+        // ALGORITMOS MATEMÁTICOS Y TRADUCTOR DE LETRAS ACTUALIZADO
+        // =========================================================================
+        function csvCalcularAzimut(dx, dy) {
+            let azimut = Math.atan2(dx, dy) * (180 / Math.PI);
+            if (azimut < 0) azimut += 360;
+            const grados = Math.floor(azimut);
+            const minTotal = (azimut - grados) * 60;
+            const minutos = Math.floor(minTotal);
+            const segundos = Math.round((minTotal - minutos) * 60);
+            return { grados, minutos, segundos };
+        }
+
+        function dxfAnalizarTramo_Local(inicio, fin) {
+            const dx = fin.x - inicio.x;
+            const dy = fin.y - inicio.y;
+            const dist = obtenerDistancia(inicio, fin);
+            const azObj = csvCalcularAzimut(dx, dy);
+
+            if (inicio.bulbo && inicio.bulbo !== 0) {
+                const b = inicio.bulbo;
+                const angular = 4 * Math.atan(Math.abs(b));
+                const radio = dist / (2 * Math.sin(angular / 2));
+                const longitudArco = radio * angular;
+                const deltaGrad = angular * (180 / Math.PI);
+                const g = Math.floor(deltaGrad);
+                const mTotal = (deltaGrad - g) * 60;
+                const m = Math.floor(mTotal);
+                const s = (mTotal - m) * 60;
+                return { esCurva: true, longitudArco, radio, dms: { grados: g, minutos: m, segundos: s }, distancia: dist };
+            }
+            return { esCurva: false, distancia: dist, dms: azObj };
+        }
+
+        function numeroAPalabras(num) {
+            const partes = parseFloat(num).toFixed(2).split('.');
+            const entero = parseInt(partes[0], 10);
+            const decimal = parseInt(partes[1], 10);
+
+            function convertirEntero(n) {
+                if (n === 0) return "cero";
+                const unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+                const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+                const especiales = {
+                    11: "once", 12: "doce", 13: "trece", 14: "catorce", 15: "quince",
+                    16: "dieciséis", 17: "diecisiete", 18: "dieciocho", 19: "diecinueve"
+                };
+
+                if (n < 10) return unidades[n];
+                if (n >= 11 && n <= 19) return especiales[n];
+                if (n < 100) {
+                    const d = Math.floor(n / 10), u = n % 10;
+                    if (u === 0) return decenas[d];
+                    if (d === 2) return "veinti" + unidades[u];
+                    return decenas[d] + " y " + unidades[u];
+                }
+                if (n < 1000) {
+                    const c = Math.floor(n / 100), resto = n % 100;
+                    if (c === 1 && resto === 0) return "cien";
+                    const centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
+                    return centenas[c] + (resto > 0 ? " " + convertirEntero(resto) : "");
+                }
+                return n.toString();
+            }
+
+            let resultadoLetras = convertirEntero(entero);
+            if (decimal > 0) {
+                resultadoLetras += " punto " + (decimal < 10 ? "cero " : "") + convertirEntero(decimal);
+            }
+            return resultadoLetras;
+        }
+
+        // =========================================================================
+        // GENERACIÓN DE MEMORIAS DESCRIPTIVAS (.DOC)
+        // =========================================================================
+        function csvGenerarTextoDescriptivo() {
+            let textoAcumulado = "";
+            for (let i = 0; i < csvVertices.length; i++) {
+                const inicio = csvVertices[i], fin = csvVertices[(i + 1) % csvVertices.length];
+                const azObj = csvCalcularAzimut(fin.x - inicio.x, fin.y - inicio.y);
+                const distFormateada = obtenerDistancia(inicio, fin).toFixed(2);
+
+                textoAcumulado += `de la estación ${numeroAPalabras(i)} (${i}) al punto de observación ${numeroAPalabras((i + 1) % csvVertices.length)} (${(i + 1) % csvVertices.length}) `;
+                textoAcumulado += `un azimut de ${numeroAPalabras(azObj.grados)} grados (${azObj.grados}°), ${numeroAPalabras(azObj.minutos)} minutos (${azObj.minutos}´), ${numeroAPalabras(azObj.segundos)} segundos (${azObj.segundos}”), `;
+                textoAcumulado += `una distancia de ${numeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
+                textoAcumulado += i < csvVertices.length - 1 ? ", " : ".";
+            }
+            return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
+        }
+
+        function dxfGenerarTextoDescriptivo() {
+            let textoAcumulado = "";
+            for (let i = 0; i < dxfVertices.length; i++) {
+                const inicio = dxfVertices[i], fin = dxfVertices[(i + 1) % dxfVertices.length];
+                const tramo = dxfAnalizarTramo_Local(inicio, fin);
+                
+                textoAcumulado += `de la estación ${numeroAPalabras(i)} (${i}) al punto de observación ${numeroAPalabras((i + 1) % dxfVertices.length)} (${(i + 1) % dxfVertices.length}) `;
+                
+                if (tramo.esCurva) {
+                    const longCurvaFormateada = tramo.longitudArco.toFixed(2);
+                    const radioFormateado = tramo.radio.toFixed(2);
+                    textoAcumulado += `una curva con un delta de ${numeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${numeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}´), ${numeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}”), `;
+                    textoAcumulado += `una longitud de ${numeroAPalabras(longCurvaFormateada)} metros (${longCurvaFormateada} m) y un radio de ${numeroAPalabras(radioFormateado)} metros (${radioFormateado} m)`;
+                } else {
+                    const distFormateada = tramo.distancia.toFixed(2);
+                    textoAcumulado += `un azimut de ${numeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${numeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}´), ${numeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}”), `;
+                    textoAcumulado += `una distancia de ${numeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
+                }
+                
+                textoAcumulado += i < dxfVertices.length - 1 ? ", " : ".";
+            }
+            return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
+        }
+
+        // =========================================================================
+        // PROCESAMIENTO PESTAÑA CSV
+        // =========================================================================
+        function leerCSV(e) {
+            const f = e.target.files[0]; if(!f) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                csvVerticesOriginales = [];
+                document.getElementById('csvAlerta').style.display = 'none';
+                const lineas = evt.target.result.split(/\r?\n/);
+                lineas.forEach(l => {
+                    l = l.trim(); if(!l) return;
+                    const p = l.split(/[,;\t]/); if(p.length < 3) return;
+                    const num = p[0].trim(), x = parseFloat(p[1]), y = parseFloat(p[2]);
+                    if(!isNaN(x) && !isNaN(y)) csvVerticesOriginales.push({ numero: num, x, y, bulbo: 0 });
+                });
+                csvVerticesOriginales.sort((a,b) => Number(a.numero) - Number(b.numero));
+                
+                if(csvVerticesOriginales.length >= 3) {
+                    sugerirEscalaValores(csvVerticesOriginales, 'csv');
+                    document.getElementById('csvInvertirSentido').checked = false;
+                    cambiarSentidoCSV();
+                } else { alert("Estructura de CSV inválida."); }
+            };
+            reader.readAsText(f);
+        }
+
+        async function cambiarSentidoCSV() {
+            if(csvVerticesOriginales.length < 3) return;
+            
+            document.getElementById('csvAlerta').style.display = 'none';
+            document.getElementById('csvAlerta').innerText = '';
+            
+            if(document.getElementById('csvInvertirSentido').checked) {
+                let tmp = []; const n = csvVerticesOriginales.length;
+                for(let i=0; i<n; i++) {
+                    let oIdx = (n - i) % n;
+                    tmp.push({ numero: i.toString(), x: csvVerticesOriginales[oIdx].x, y: csvVerticesOriginales[oIdx].y, bulbo: 0 });
+                }
+                csvVertices = tmp;
+            } else { csvVertices = [...csvVerticesOriginales]; }
+
+            try {
+                document.getElementById('csvInfo').innerHTML = "⏳ Procesando geometría en el servidor seguro...";
+                document.getElementById('csvInfo').style.display = 'block';
+
+                const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        vertices: csvVertices,
+                        radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 1,
+                        txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 1.5,
+                        txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8,
+						decimalesSegundos: parseInt(document.getElementById('csvDecimalesSegundos').value) || 0
+                    })
+                });
+                
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    throw new Error(datos.error || "Error en la respuesta del servidor.");
+                }
+
+                if(datos.areaCalculada > LIMITE_AREA_MAX) {
+                    document.getElementById('csvAlerta').innerText = `Error: El área calculada (${globalFormatearNumero(datos.areaCalculada)} m²) supera el límite de ${LIMITE_AREA_MAX} m².`;
+                    document.getElementById('csvAlerta').style.display = 'block';
+                    document.getElementById('csvDownloadBtn').disabled = true;
+                    document.getElementById('csvInfo').style.display = 'none';
+                    document.getElementById('csvCanvas').getContext('2d').clearRect(0,0,500,450);
+                    return;
+                }
+
+                document.getElementById('csvInfo').innerHTML = `Polígono cargado: ${csvVertices.length} vértices. Área: ${globalFormatearNumero(datos.areaCalculada)} m².`;
+                document.getElementById('csvInfo').style.display = 'block';
+                document.getElementById('csvDownloadBtn').disabled = false;
+                redibujarCSV();
+            } catch (e) {
+                document.getElementById('csvInfo').style.display = 'none';
+                document.getElementById('csvAlerta').innerText = `⚠️ Error de comunicación: No se pudo conectar con el servidor seguro. Detalles: ${e.message}`;
+                document.getElementById('csvAlerta').style.display = 'block';
+                console.error(e);
+            }
+        }
+
+        function redibujarCSV() {
+            if(csvVertices.length < 3) return;
+            const canvas = document.getElementById('csvCanvas'), ctx = canvas.getContext('2d');
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const xs = csvVertices.map(v => v.x), ys = csvVertices.map(v => v.y);
+            const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+            const margenExt = Math.max(maxX - minX, maxY - minY) * 0.15 || 5;
+            const escala = Math.min((canvas.width - 80)/(maxX - minX + margenExt), (canvas.height - 80)/(maxY - minY + margenExt));
+            const cX = (minX + maxX) / 2, cY = (minY + maxY) / 2;
+
+            function trans(v) { return { x: canvas.width / 2 + (v.x - cX) * escala, y: canvas.height / 2 - (v.y - cY) * escala }; }
+            
+            ctx.beginPath();
+            csvVertices.forEach((v,i) => { let p = trans(v); if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
+            ctx.closePath(); ctx.strokeStyle = 'blue'; ctx.stroke();
+
+            const radioCustom = parseFloat(document.getElementById('csvRadioVertices').value) || 1;
+            const txtVerticesCustom = parseFloat(document.getElementById('csvTxtVertices').value) || 1.5;
+            const radioCanvas = Math.max(4, radioCustom * escala);
+            const txtCanvasSize = Math.max(11, txtVerticesCustom * escala * 0.9);
+
+            csvVertices.forEach((v,i) => {
+                let p = trans(v); ctx.fillStyle = 'red'; ctx.beginPath(); ctx.arc(p.x,p.y,radioCanvas,0,2*Math.PI); ctx.fill();
+                ctx.fillStyle = '#000'; ctx.font = `bold ${txtCanvasSize}px Arial`; ctx.fillText(i.toString(), p.x + radioCanvas + 3, p.y - 3);
+            });
+        }
+
+async function descargarCSV() {
+    if(csvVertices.length < 3) return;
+    try {
+        const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                vertices: csvVertices,
+                radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 0.10,
+                txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 0.16,
+                txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8,
+                decimalesSegundos: parseInt(document.getElementById('csvDecimalesSegundos').value) || 0
+            })
+        });
+        const datos = await respuesta.json();
+        
+        triggerDescarga(datos.dxfContenido, 'poligono_csv.dxf', 'application/dxf');
+        
+        const checkMinuta = document.getElementById('csvGenerarTextoDoc');
+        if (checkMinuta && checkMinuta.checked) {
+            // CORRECCIÓN: Usamos 'datos.minutaTextoHtml' que viene fresca del servidor modificado
+            let contenidoHtml = datos.minutaTextoHtml;
+            if (!contenidoHtml.startsWith('\ufeff')) {
+                contenidoHtml = '\ufeff' + contenidoHtml;
+            }
+            triggerDescarga(contenidoHtml, 'minuta_csv.doc', 'application/msword;charset=utf-8');
+        }
+    } catch (err) { 
+        console.error(err);
+        alert("Error al descargar el archivo desde el servidor."); 
+    }
+}
+
+        // =========================================================================
+        // PROCESAMIENTO PESTAÑA DXF - CURVAS
+        // =========================================================================
+        function leerDXF(e) {
+            const f = e.target.files[0]; if(!f) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                dxfVerticesOriginales = [];
+                document.getElementById('dxfAlerta').style.display = 'none';
+                const lines = evt.target.result.split(/\r?\n/).map(l => l.trim());
+                let i = 0, active = false, lX = [], lY = [], lB = [];
+
+                while(i < lines.length) {
+                    if(lines[i] === "0" && lines[i+1] === "LWPOLYLINE") { active = true; lX = []; lY = []; lB = []; i+=2; continue; }
+                    if(active) {
+                        if(lines[i] === "0" && (lines[i+1] === "LWPOLYLINE" || lines[i+1] === "ENDSEC" || lines[i+1] === "BRX_EVALUATOR")) {
+                            active = false; if(lX.length >= 3) break;
+                        } else {
+                            if(lines[i] === "10") lX.push(parseFloat(lines[i+1]));
+                            if(lines[i] === "20") lY.push(parseFloat(lines[i+1]));
+                            if(lines[i] === "42") lB[lX.length - 1] = parseFloat(lines[i+1]);
+                            i+=2; continue;
+                        }
+                    }
+                    i++;
+                }
+
+                if(lX.length >= 3) {
+                    for(let j=0; j<lX.length; j++) {
+                        dxfVerticesOriginales.push({ numero: j.toString(), x: lX[j], y: lY[j], bulbo: lB[j] || 0 });
+                    }
+                    sugerirEscalaValores(dxfVerticesOriginales, 'dxf');
+                    document.getElementById('dxfInvertirSentido').checked = false;
+                    cambiarSentidoDXF();
+                } else { alert("No se halló una LWPOLYLINE cerrada válida en las entidades."); }
+            };
+            reader.readAsText(f);
+        }
+
+        async function cambiarSentidoDXF() {
+            if(dxfVerticesOriginales.length < 3) return;
+            document.getElementById('dxfAlerta').style.display = 'none';
+            
+            if(document.getElementById('dxfInvertirSentido').checked) {
+                let tmp = []; const n = dxfVerticesOriginales.length;
+                for(let i=0; i<n; i++) {
+                    let oIdx = (n - i) % n, bIdx = (n - i - 1) % n;
+                    tmp.push({ numero: i.toString(), x: dxfVerticesOriginales[oIdx].x, y: dxfVerticesOriginales[oIdx].y, bulbo: -dxfVerticesOriginales[bIdx].bulbo });
+                }
+                dxfVertices = tmp;
+            } else { dxfVertices = [...dxfVerticesOriginales]; }
+
+            try {
+                const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        vertices: dxfVertices,
+                        radioCustom: parseFloat(document.getElementById('dxfRadioVertices').value) || 1,
+                        txtVerticesCustom: parseFloat(document.getElementById('dxfTxtVertices').value) || 1.5,
+                        txtTablaCustom: parseFloat(document.getElementById('dxfTxtTabla').value) || 0.8,
+						decimalesSegundos: parseInt(document.getElementById('dxfDecimalesSegundos').value) || 0
+                    })
+                });
+                const datos = await respuesta.json();
+
+                if(datos.areaCalculada > LIMITE_AREA_MAX) {
+                    document.getElementById('dxfAlerta').innerText = `Error: El área calculada (${globalFormatearNumero(datos.areaCalculada)} m²) supera el límite de ${LIMITE_AREA_MAX} m².`;
+                    document.getElementById('dxfAlerta').style.display = 'block';
+                    document.getElementById('dxfDownloadBtn').disabled = true;
+                    document.getElementById('dxfInfo').style.display = 'none';
+                    document.getElementById('dxfCanvas').getContext('2d').clearRect(0,0,500,450);
+                    return;
+                }
+
+                document.getElementById('dxfInfo').innerHTML = `Polígono DXF: ${dxfVertices.length} vértices. Área: ${globalFormatearNumero(datos.areaCalculada)} m².`;
+                document.getElementById('dxfInfo').style.display = 'block';
+                document.getElementById('dxfDownloadBtn').disabled = false;
+                redibujarDXF();
+            } catch (e) { alert("Error de comunicación con el servidor seguro."); }
+        }
+
+        function redibujarDXF() {
+            if(dxfVertices.length < 3) return;
+            const canvas = document.getElementById('dxfCanvas'), ctx = canvas.getContext('2d');
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const xs = dxfVertices.map(v => v.x), ys = dxfVertices.map(v => v.y);
+            const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+            const margenExt = Math.max(maxX - minX, maxY - minY) * 0.15 || 5;
+            const escala = Math.min((canvas.width - 80)/(maxX - minX + margenExt), (canvas.height - 80)/(maxY - minY + margenExt));
+            const cX = (minX + maxX) / 2, cY = (minY + maxY) / 2;
+
+            function trans(v) { return { x: canvas.width / 2 + (v.x - cX) * escala, y: canvas.height / 2 - (v.y - cY) * escala }; }
+
+            for(let i=0; i<dxfVertices.length; i++) {
+                let p1 = trans(dxfVertices[i]), p2 = trans(dxfVertices[(i+1)%dxfVertices.length]);
+                ctx.beginPath(); ctx.moveTo(p1.x, p1.y);
+                if(dxfVertices[i].bulbo && dxfVertices[i].bulbo !== 0) {
+                    let b = dxfVertices[i].bulbo, ch = obtenerDistancia(p1,p2);
+                    let rC = (ch * (1 + b*b)) / (4 * Math.abs(b)), sa = (ch/2)*b;
+                    let mx = (p1.x+p2.x)/2, my = (p1.y+p2.y)/2;
+                    let cx = mx - (-(p2.y - p1.y)/ch)*((rC - Math.abs(sa))*Math.sign(b));
+                    let cy = my - ((p2.x - p1.x)/ch)*((rC - Math.abs(sa))*Math.sign(b));
+                    ctx.arc(cx, cy, rC, Math.atan2(p1.y-cy, p1.x-cx), Math.atan2(p2.y-cy, p2.x-cx), b < 0);
+                } else { ctx.lineTo(p2.x, p2.y); }
+                ctx.strokeStyle = 'green'; ctx.stroke();
+            }
+
+            const radioCustom = parseFloat(document.getElementById('dxfRadioVertices').value) || 1;
+            const txtVerticesCustom = parseFloat(document.getElementById('dxfTxtVertices').value) || 1.5;
+            const radioCanvas = Math.max(4, radioCustom * escala);
+            const txtCanvasSize = Math.max(11, txtVerticesCustom * escala * 0.9);
+
+            dxfVertices.forEach((v,i) => {
+                let p = trans(v); ctx.fillStyle = 'blue'; ctx.beginPath(); ctx.arc(p.x,p.y,radioCanvas,0,2*Math.PI); ctx.fill();
+                ctx.fillStyle = '#000'; ctx.font = `bold ${txtCanvasSize}px Arial`; ctx.fillText(i.toString(), p.x + radioCanvas + 3, p.y - 3);
+            });
+        }
+
+ async function descargarDXF() {
+            if(dxfVertices.length < 3) return;
+            try {
+                const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        vertices: dxfVertices,
+                        radioCustom: parseFloat(document.getElementById('dxfRadioVertices').value) || 1,
+                        txtVerticesCustom: parseFloat(document.getElementById('dxfTxtVertices').value) || 1.5,
+                        txtTablaCustom: parseFloat(document.getElementById('dxfTxtTabla').value) || 0.8,
+                        decimalesSegundos: parseInt(document.getElementById('dxfDecimalesSegundos').value) || 0
+                    })
+                });
+                const datos = await respuesta.json();
+                
+                triggerDescarga(datos.dxfContenido, 'poligono_curvas_procesado.dxf', 'application/dxf');
+                
+                if(document.getElementById('dxfGenerarTextoDoc').checked) {
+                    // CORRECCIÓN: Usamos 'datos.minutaTextoHtml' que viene directa y corregida del servidor
+                    let textoValidoDXF = datos.minutaTextoHtml;
+                    if (!textoValidoDXF.startsWith('\ufeff')) {
+                        textoValidoDXF = '\ufeff' + textoValidoDXF;
+                    }
+                    triggerDescarga(textoValidoDXF, 'minuta_dxf.doc', 'application/msword;charset=utf-8');
+                }
+            } catch (err) { 
+                alert("Error al procesar la descarga desde el servidor."); 
+            }
+        }
+
+
+
+	
+
+</script>
+	
+</body>
+</html>
