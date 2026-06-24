@@ -300,6 +300,27 @@
             font-family: monospace;
         }
         .footer-contact-box a:hover { text-decoration: underline; }
+
+		.btn-guia-tecnica {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    background-color: #ffffff;
+    color: var(--dark-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.btn-guia-tecnica:hover {
+    background-color: #f1f5f9;
+    border-color: #b0bec5;
+    transform: translateY(-1px);
+}
 		
     </style>
 </head>
@@ -310,10 +331,27 @@
         <p>Polígono • Identificación y numeración de vértices<br>Tabla de azimut • Tabla a texto  •  CAD</p>
     </div>
 
-    <div class="tabs-container">
+<!--    <div class="tabs-container">
         <div class="tab active" onclick="switchTab('csv')">📄 Procesar CSV</div>
         <div class="tab" onclick="switchTab('dxf')">📐 Procesar DXF</div>
+    </div> -->
+
+<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0; margin-bottom: 20px;">
+    
+    <div style="display: flex; gap: 10px;">
+        <button class="tab active" onclick="switchTab('csv')">
+            📄 Procesar CSV
+        </button>
+        <button class="tab" onclick="switchTab('dxf')">
+            📐 Procesar DXF
+        </button>
     </div>
+
+    <a href="ayuda.html" target="_blank" class="btn-guia-tecnica">
+        <span style="background-color: var(--primary-color); color: white; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; margin-right: 6px;">?</span>
+        Guía Técnica v1.1
+    </a>
+</div>
 
     <div id="tab-csv" class="content active">
         
