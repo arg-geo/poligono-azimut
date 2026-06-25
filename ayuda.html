@@ -253,10 +253,10 @@
             <p>El archivo debe poseer una estructura limpia de columnas separadas por comas (<code>,</code>), sin filas de encabezado. La estructura obligatoria por línea es:</p>
             <pre>Número Vértice,Coordenada en X,Coordenada en Y</pre>
             <p><strong>Ejemplo correcto (Polígono de 4 vértices):</strong></p>
-            <pre>0,512345.678,1623456.789
-1,512380.123,1623490.456
-2,512415.901,1623440.112
-3,512360.234,1623410.345</pre>
+            <pre>0,512345.67,1623456.78
+1,512380.12,1623490.45
+2,512415.90,1623440.11
+3,512360.23,1623410.34</pre>
 
             <h3><span class="badge-dxf">MÓDULO DXF</span> Importación de Polígono con Lados Rectos o Curvos</h3>
             <p>Diseñado para leer archivos generados en software CAD. El archivo debe cumplir los siguientes requisitos:</p>
@@ -281,15 +281,15 @@
                 <tbody>
                     <tr>
                         <td><strong>Radio de Vértices</strong></td>
-                        <td>Establece el radio de las circunferencias (código <code>CIRCLE</code>) que marcarán cada estación en el archivo DXF final.</td>
+                        <td>Establece el radio de las circunferencias (código <code>CIRCLE</code>) que marcarán cada estación en el archivo DXF final. Las circunferencias de los vértices se encuentran en la capa VERTICES.</td>
                     </tr>
                     <tr>
                         <td><strong>Texto Vértices</strong></td>
-                        <td>Define la altura del texto (código <code>TEXT</code>) que numera cronológicamente las estaciones (0, 1, 2...).</td>
+                        <td>Define la altura del texto (código <code>TEXT</code>) que numera cronológicamente las estaciones (0, 1, 2...). La numeración de los vértices se encuentra en la capa NUMEROS.</td>
                     </tr>
                     <tr>
                         <td><strong>Texto Tabla</strong></td>
-                        <td>Controla el tamaño de la fuente tipográfica dentro de la tabla de azimuts y distancias generado en el DXF.</td>
+                        <td>Controla el tamaño de la fuente tipográfica dentro de la tabla de azimuts y distancias generado en el DXF. La tabla de azimuts se encuentra en la capa TABLA.</td>
                     </tr>
                     <tr>
                         <td><strong>Invertir Sentido</strong></td>
