@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polígonos y Tabla de Azimut</title>
-
+    
     <style>
         /* ===== 1. ESTILOS GENERALES ===== */
         body { 
@@ -127,7 +127,7 @@
                 flex-direction: column !important; /* Fuerza a que vayan uno abajo del otro */
                 gap: 15px; /* Reduce un poco el espacio para optimizar pantalla */
             }
-
+            
             .content {
                 padding: 20px; /* Reduce los márgenes de la tarjeta para ganar espacio */
             }
@@ -136,7 +136,7 @@
                 flex-direction: column !important; /* El selector de decimales también se acomoda vertical */
                 align-items: flex-start !important;
             }
-
+            
             .inline-group select {
                 width: 100% !important; /* El selector ocupa todo el ancho en el celular */
             }
@@ -300,7 +300,7 @@
             font-family: monospace;
         }
         .footer-contact-box a:hover { text-decoration: underline; }
-
+		
     </style>
 </head>
 <body>
@@ -316,7 +316,7 @@
     </div>
 
     <div id="tab-csv" class="content active">
-
+        
         <div class="form-group">
             <label for="csvFile">Seleccionar archivo CSV sin encabezado (Num, X, Y):</label>
             <input type="file" id="csvFile" accept=".csv,.txt">
@@ -357,17 +357,17 @@
         </div>
 
         <button id="csvDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
-
+        
         <div id="csvAlerta" class="alerta"></div>
         <div id="csvInfo" class="panel" style="display:none;"></div>
-
+        
         <div class="canvas-container">
             <canvas id="csvCanvas" width="500" height="450"></canvas>
         </div>
     </div>
 
     <div id="tab-dxf" class="content">
-
+        
         <div class="form-group">
             <label for="dxfFile">Seleccionar DXF (Polilínea):</label>
             <input type="file" id="dxfFile" accept=".dxf">
@@ -408,10 +408,10 @@
         </div>
 
         <button id="dxfDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
-
+        
         <div id="dxfAlerta" class="alerta"></div>
         <div id="dxfInfo" class="panel" style="display:none;"></div>
-
+        
         <div class="canvas-container">
             <canvas id="dxfCanvas" width="500" height="450"></canvas>
         </div>
@@ -422,19 +422,19 @@
     </div>
 
 
-
+	
 <footer class="site-footer">
         <div class="footer-container">
             <p>Procesamiento Avanzado de Datos Topográficos: Generación de Archivos DXF bajo Estándares CAD (Unidades en Metros)</p>
-
+            
             <hr class="footer-hr">
-
+            
             <p class="footer-disclaimer">
                 <strong>AVISO DE EXENCIÓN DE RESPONSABILIDAD:</strong> Este servicio web de procesamiento de polígonos, identificación y numeración de vértices, generación de tabla de azimut y generación de texto se proporciona de forma gratuita y con fines exclusivamente informativos, académicos y de utilidad pública. El autor no asume ninguna responsabilidad legal, civil o administrativa por la exactitud, integridad o idoneidad técnica de los productos generados: archivos .DXF o .DOC con el polígono y el texto generados. Es responsabilidad exclusiva del profesional o usuario final contrastar, verificar y validar los resultados frente a los levantamientos de campo y las normativas correspondientes vigentes.
             </p>
-
+            
             <hr class="footer-hr">
-
+            
             <div class="footer-bottom">
                 <span>🇬🇹 Servicio desarrollado por <strong>MSc Aldo González</strong></span>
                 <span class="footer-contact-box">
@@ -444,11 +444,7 @@
             </div>
         </div>
     </footer>
-
-  
-  
-  
-
+	
  <script>
 
 // Script para inicializar dinámicamente el año del Footer institucional
@@ -471,8 +467,6 @@
         document.getElementById('csvTxtTabla').addEventListener('input', cambiarSentidoCSV);
         document.getElementById('csvInvertirSentido').addEventListener('change', cambiarSentidoCSV);
 
-		document.getElementById('csvDecimalesSegundos').addEventListener('change', cambiarSentidoCSV);
-	    document.getElementById('dxfDecimalesSegundos').addEventListener('change', cambiarSentidoDXF);
         document.getElementById('csvDecimalesSegundos').addEventListener('change', cambiarSentidoCSV);
         document.getElementById('dxfDecimalesSegundos').addEventListener('change', cambiarSentidoDXF);
 
@@ -498,7 +492,7 @@
         // --- UTILERÍAS LOCALES DEL FRONTEND ---
         function globalFormatearNumero(n) { return n.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
         function obtenerDistancia(p1, p2) { return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)); }
-
+        
         function triggerDescarga(contenido, file, mime) {
             const blob = new Blob([contenido], { type: mime });
             const url = URL.createObjectURL(blob);
@@ -512,124 +506,10 @@
             const xs = arreglo.map(v => v.x), ys = arreglo.map(v => v.y);
             const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
             const tamaño = Math.max(maxX - minX, maxY - minY);
-
+            
             document.getElementById(`${prefixTab}RadioVertices`).value = (tamaño * 0.010).toFixed(2);
             document.getElementById(`${prefixTab}TxtVertices`).value = (tamaño * 0.016).toFixed(2);
             document.getElementById(`${prefixTab}TxtTabla`).value = (tamaño * 0.008).toFixed(2);
-        }
-
-        // =========================================================================
-        // ALGORITMOS MATEMÁTICOS Y TRADUCTOR DE LETRAS ACTUALIZADO
-        // =========================================================================
-        function csvCalcularAzimut(dx, dy) {
-            let azimut = Math.atan2(dx, dy) * (180 / Math.PI);
-            if (azimut < 0) azimut += 360;
-            const grados = Math.floor(azimut);
-            const minTotal = (azimut - grados) * 60;
-            const minutos = Math.floor(minTotal);
-            const segundos = Math.round((minTotal - minutos) * 60);
-            return { grados, minutos, segundos };
-        }
-
-        function dxfAnalizarTramo_Local(inicio, fin) {
-            const dx = fin.x - inicio.x;
-            const dy = fin.y - inicio.y;
-            const dist = obtenerDistancia(inicio, fin);
-            const azObj = csvCalcularAzimut(dx, dy);
-
-            if (inicio.bulbo && inicio.bulbo !== 0) {
-                const b = inicio.bulbo;
-                const angular = 4 * Math.atan(Math.abs(b));
-                const radio = dist / (2 * Math.sin(angular / 2));
-                const longitudArco = radio * angular;
-                const deltaGrad = angular * (180 / Math.PI);
-                const g = Math.floor(deltaGrad);
-                const mTotal = (deltaGrad - g) * 60;
-                const m = Math.floor(mTotal);
-                const s = (mTotal - m) * 60;
-                return { esCurva: true, longitudArco, radio, dms: { grados: g, minutos: m, segundos: s }, distancia: dist };
-            }
-            return { esCurva: false, distancia: dist, dms: azObj };
-        }
-
-        function numeroAPalabras(num) {
-            const partes = parseFloat(num).toFixed(2).split('.');
-            const entero = parseInt(partes[0], 10);
-            const decimal = parseInt(partes[1], 10);
-
-            function convertirEntero(n) {
-                if (n === 0) return "cero";
-                const unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
-                const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
-                const especiales = {
-                    11: "once", 12: "doce", 13: "trece", 14: "catorce", 15: "quince",
-                    16: "dieciséis", 17: "diecisiete", 18: "dieciocho", 19: "diecinueve"
-                };
-
-                if (n < 10) return unidades[n];
-                if (n >= 11 && n <= 19) return especiales[n];
-                if (n < 100) {
-                    const d = Math.floor(n / 10), u = n % 10;
-                    if (u === 0) return decenas[d];
-                    if (d === 2) return "veinti" + unidades[u];
-                    return decenas[d] + " y " + unidades[u];
-                }
-                if (n < 1000) {
-                    const c = Math.floor(n / 100), resto = n % 100;
-                    if (c === 1 && resto === 0) return "cien";
-                    const centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
-                    return centenas[c] + (resto > 0 ? " " + convertirEntero(resto) : "");
-                }
-                return n.toString();
-            }
-
-            let resultadoLetras = convertirEntero(entero);
-            if (decimal > 0) {
-                resultadoLetras += " punto " + (decimal < 10 ? "cero " : "") + convertirEntero(decimal);
-            }
-            return resultadoLetras;
-        }
-
-        // =========================================================================
-        // GENERACIÓN DE MEMORIAS DESCRIPTIVAS (.DOC)
-        // =========================================================================
-        function csvGenerarTextoDescriptivo() {
-            let textoAcumulado = "";
-            for (let i = 0; i < csvVertices.length; i++) {
-                const inicio = csvVertices[i], fin = csvVertices[(i + 1) % csvVertices.length];
-                const azObj = csvCalcularAzimut(fin.x - inicio.x, fin.y - inicio.y);
-                const distFormateada = obtenerDistancia(inicio, fin).toFixed(2);
-
-                textoAcumulado += `de la estación ${numeroAPalabras(i)} (${i}) al punto de observación ${numeroAPalabras((i + 1) % csvVertices.length)} (${(i + 1) % csvVertices.length}) `;
-                textoAcumulado += `un azimut de ${numeroAPalabras(azObj.grados)} grados (${azObj.grados}°), ${numeroAPalabras(azObj.minutos)} minutos (${azObj.minutos}´), ${numeroAPalabras(azObj.segundos)} segundos (${azObj.segundos}”), `;
-                textoAcumulado += `una distancia de ${numeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
-                textoAcumulado += i < csvVertices.length - 1 ? ", " : ".";
-            }
-            return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
-        }
-
-        function dxfGenerarTextoDescriptivo() {
-            let textoAcumulado = "";
-            for (let i = 0; i < dxfVertices.length; i++) {
-                const inicio = dxfVertices[i], fin = dxfVertices[(i + 1) % dxfVertices.length];
-                const tramo = dxfAnalizarTramo_Local(inicio, fin);
-                
-                textoAcumulado += `de la estación ${numeroAPalabras(i)} (${i}) al punto de observación ${numeroAPalabras((i + 1) % dxfVertices.length)} (${(i + 1) % dxfVertices.length}) `;
-                
-                if (tramo.esCurva) {
-                    const longCurvaFormateada = tramo.longitudArco.toFixed(2);
-                    const radioFormateado = tramo.radio.toFixed(2);
-                    textoAcumulado += `una curva con un delta de ${numeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${numeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}´), ${numeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}”), `;
-                    textoAcumulado += `una longitud de ${numeroAPalabras(longCurvaFormateada)} metros (${longCurvaFormateada} m) y un radio de ${numeroAPalabras(radioFormateado)} metros (${radioFormateado} m)`;
-                } else {
-                    const distFormateada = tramo.distancia.toFixed(2);
-                    textoAcumulado += `un azimut de ${numeroAPalabras(tramo.dms.grados)} grados (${tramo.dms.grados}°), ${numeroAPalabras(tramo.dms.minutos)} minutos (${tramo.dms.minutos}´), ${numeroAPalabras(Math.floor(tramo.dms.segundos))} segundos (${Math.floor(tramo.dms.segundos)}”), `;
-                    textoAcumulado += `una distancia de ${numeroAPalabras(distFormateada)} metros (${distFormateada} m)`;
-                }
-                
-                textoAcumulado += i < dxfVertices.length - 1 ? ", " : ".";
-            }
-            return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Descriptiva</title><style>body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; text-align: justify; }</style></head><body><p>${textoAcumulado}</p></body></html>`;
         }
 
         // =========================================================================
@@ -649,7 +529,7 @@
                     if(!isNaN(x) && !isNaN(y)) csvVerticesOriginales.push({ numero: num, x, y, bulbo: 0 });
                 });
                 csvVerticesOriginales.sort((a,b) => Number(a.numero) - Number(b.numero));
-
+                
                 if(csvVerticesOriginales.length >= 3) {
                     sugerirEscalaValores(csvVerticesOriginales, 'csv');
                     document.getElementById('csvInvertirSentido').checked = false;
@@ -661,10 +541,10 @@
 
         async function cambiarSentidoCSV() {
             if(csvVerticesOriginales.length < 3) return;
-
+            
             document.getElementById('csvAlerta').style.display = 'none';
             document.getElementById('csvAlerta').innerText = '';
-
+            
             if(document.getElementById('csvInvertirSentido').checked) {
                 let tmp = []; const n = csvVerticesOriginales.length;
                 for(let i=0; i<n; i++) {
@@ -686,11 +566,10 @@
                         radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 1,
                         txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 1.5,
                         txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8,
-						decimalesSegundos: parseInt(document.getElementById('csvDecimalesSegundos').value) || 0
                         decimalesSegundos: parseInt(document.getElementById('csvDecimalesSegundos').value) || 0
                     })
                 });
-
+                
                 const datos = await respuesta.json();
 
                 if (!respuesta.ok) {
@@ -729,7 +608,7 @@
             const cX = (minX + maxX) / 2, cY = (minY + maxY) / 2;
 
             function trans(v) { return { x: canvas.width / 2 + (v.x - cX) * escala, y: canvas.height / 2 - (v.y - cY) * escala }; }
-
+            
             ctx.beginPath();
             csvVertices.forEach((v,i) => { let p = trans(v); if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
             ctx.closePath(); ctx.strokeStyle = 'blue'; ctx.stroke();
@@ -745,30 +624,6 @@
             });
         }
 
-async function descargarCSV() {
-    if(csvVertices.length < 3) return;
-    try {
-        const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                vertices: csvVertices,
-                radioCustom: parseFloat(document.getElementById('csvRadioVertices').value) || 0.10,
-                txtVerticesCustom: parseFloat(document.getElementById('csvTxtVertices').value) || 0.16,
-                txtTablaCustom: parseFloat(document.getElementById('csvTxtTabla').value) || 0.8,
-                decimalesSegundos: parseInt(document.getElementById('csvDecimalesSegundos').value) || 0
-            })
-        });
-        const datos = await respuesta.json();
-        
-        triggerDescarga(datos.dxfContenido, 'poligono_csv.dxf', 'application/dxf');
-        
-        const checkMinuta = document.getElementById('csvGenerarTextoDoc');
-        if (checkMinuta && checkMinuta.checked) {
-            // CORRECCIÓN: Usamos 'datos.minutaTextoHtml' que viene fresca del servidor modificado
-            let contenidoHtml = datos.minutaTextoHtml;
-            if (!contenidoHtml.startsWith('\ufeff')) {
-                contenidoHtml = '\ufeff' + contenidoHtml;
         async function descargarCSV() {
             if(csvVertices.length < 3) return;
             try {
@@ -799,13 +654,7 @@ async function descargarCSV() {
                 console.error(err);
                 alert("Error al descargar el archivo desde el servidor."); 
             }
-            triggerDescarga(contenidoHtml, 'minuta_csv.doc', 'application/msword;charset=utf-8');
         }
-    } catch (err) { 
-        console.error(err);
-        alert("Error al descargar el archivo desde el servidor."); 
-    }
-}
 
         // =========================================================================
         // PROCESAMIENTO PESTAÑA DXF - CURVAS
@@ -849,7 +698,7 @@ async function descargarCSV() {
         async function cambiarSentidoDXF() {
             if(dxfVerticesOriginales.length < 3) return;
             document.getElementById('dxfAlerta').style.display = 'none';
-
+            
             if(document.getElementById('dxfInvertirSentido').checked) {
                 let tmp = []; const n = dxfVerticesOriginales.length;
                 for(let i=0; i<n; i++) {
@@ -868,7 +717,6 @@ async function descargarCSV() {
                         radioCustom: parseFloat(document.getElementById('dxfRadioVertices').value) || 1,
                         txtVerticesCustom: parseFloat(document.getElementById('dxfTxtVertices').value) || 1.5,
                         txtTablaCustom: parseFloat(document.getElementById('dxfTxtTabla').value) || 0.8,
-						decimalesSegundos: parseInt(document.getElementById('dxfDecimalesSegundos').value) || 0
                         decimalesSegundos: parseInt(document.getElementById('dxfDecimalesSegundos').value) || 0
                     })
                 });
@@ -927,7 +775,6 @@ async function descargarCSV() {
             });
         }
 
- async function descargarDXF() {
         async function descargarDXF() {
             if(dxfVertices.length < 3) return;
             try {
@@ -943,11 +790,10 @@ async function descargarCSV() {
                     })
                 });
                 const datos = await respuesta.json();
-
+                
                 triggerDescarga(datos.dxfContenido, 'poligono_curvas_procesado.dxf', 'application/dxf');
-
+                
                 if(document.getElementById('dxfGenerarTextoDoc').checked) {
-                    // CORRECCIÓN: Usamos 'datos.minutaTextoHtml' que viene directa y corregida del servidor
                     let textoValidoDXF = datos.minutaTextoHtml;
                     if (!textoValidoDXF.startsWith('\ufeff')) {
                         textoValidoDXF = '\ufeff' + textoValidoDXF;
@@ -960,6 +806,9 @@ async function descargarCSV() {
         }
 
 </script> 
+  
+  
 
+	
 </body>
 </html>
