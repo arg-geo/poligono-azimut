@@ -310,11 +310,21 @@
         <p>Polígono • Identificación y numeración de vértices<br>Tabla de azimut • Tabla a texto  •  CAD</p>
     </div>
 
-    <div class="tabs-container">
-        <div class="tab active" onclick="switchTab('csv')">📄 Procesar CSV</div>
-        <div class="tab" onclick="switchTab('dxf')">📐 Procesar DXF</div>
-    </div>
+<!--------->
+	<div class="tabs-container" style="display: flex; items-center: center; justify-content: space-between; border-bottom: 1px solid var(--border-color, #cfd8dc); pb-0; margin-bottom: 20px;">
+        
+        <div style="display: flex; gap: 4px;">
+            <div class="tab active" onclick="switchTab('csv')">📄 Procesar CSV</div>
+            <div class="tab" onclick="switchTab('dxf')">📐 Procesar DXF</div>
+        </div>
 
+        <div style="padding-bottom: 8px; display: flex; align-items: center;">
+            <a href="ayuda.html" target="_blank" onclick="gtag('event', 'consulta_ayuda', {'origen_clic': 'pestana_index'});" class="inline-flex items-center px-3 py-1.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-all duration-150 shadow-sm" style="display: inline-flex; align-items: center; text-decoration: none; background-color: #f1f5f9; color: #334155; font-size: 12px; font-weight: bold; padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; transition: all 0.15s;">
+                <i class="fa-solid fa-circle-question text-blue-700 mr-1.5 text-sm" style="color: #1d4ed8; margin-right: 6px; font-size: 14px;"></i> Guía Técnica v1.1
+            </a>
+        </div>
+    </div>
+<!--------->
     <div id="tab-csv" class="content active">
         
         <div class="form-group">
