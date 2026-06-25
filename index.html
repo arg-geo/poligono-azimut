@@ -584,7 +584,7 @@
             } else { csvVertices = [...csvVerticesOriginales]; }
 
             try {
-                document.getElementById('csvInfo').innerHTML = "⏳ Procesando geometría en el servidor seguro...";
+                document.getElementById('csvInfo').innerHTML = "⏳ Procesando geometría en el servidor...";
                 document.getElementById('csvInfo').style.display = 'block';
 
                 const respuesta = await fetch(`${BACKEND_URL}/api/generar-dxf`, {
