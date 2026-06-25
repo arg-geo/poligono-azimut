@@ -53,16 +53,35 @@
             border-bottom: 3px solid transparent;
             transition: all 0.3s ease;
             font-size: 15px;
+			background-color: #f1f5f9; /* Un gris sutil estilo Tailwind */
+    		border-radius: 8px 8px 0 0; /* Opcional: Redondea las esquinas superiores */
         }
-        .tab:hover {
+       
+/* CAMBIO: Efecto visual cuando el usuario pasa el cursor encima */
+.tab:hover {
+    background-color: #e2e8f0; /* Un gris un poco más oscuro al pasar el mouse */
+    color: #334155;
+}
+
+/* CAMBIO: Color de fondo específico para la pestaña seleccionada (Activa) */
+.tab.active {
+    background-color: #ffffff; /* Fondo blanco para resaltar que está abierta */
+    color: #1d4ed8;            /* Cambia el texto al azul de tu línea activa */
+    border-bottom: 3px solid #1d4ed8; /* Tu línea azul activa original */
+}		
+		
+		
+		
+		/*.tab:hover {
             color: #0d47a1;
             background-color: #f8fafc;
         }
         .tab.active {
             color: #0d47a1;
             border-bottom: 3px solid #0d47a1; /* Línea azul en la pestaña activa */
-            background-color: #ffffff;
-        }
+       /*     background-color: #ffffff;
+        }*/
+		
 
         /* ===== 4. TARJETA DE CONTENIDO CONTRASTADA ===== */
         .content {
