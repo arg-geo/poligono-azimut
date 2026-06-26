@@ -1,0 +1,7 @@
+# Directorio de rastreo para buscadores - Proyecto Polígonos y Azimut
+User-agent: *
+Allow: /poligono-azimut/
+Allow: /poligono-azimut/ayuda.html
+
+# Enlace al mapa del sitio para agilizar la indexación
+Sitemap: https://arg-geo.github.io/poligono-azimut/sitemap.xml
