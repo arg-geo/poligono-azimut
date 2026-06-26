@@ -390,17 +390,18 @@
 </head>
 <body>
 
+<body>
+
     <div class="header-institucional">
         <h2>Polígonos y Tabla de azimut</h2>
         <p>Polígono • Identificación y numeración de vértices<br>Tabla de azimut • Tabla a texto  •  CAD</p>
     </div>
 
-<!--------->
-	<div class="tabs-container" style="display: flex; items-center: center; justify-content: space-between; border-bottom: 1px solid var(--border-color, #cfd8dc); pb-0; margin-bottom: 20px;">
+<div class="tabs-container" style="display: flex; items-center: center; justify-content: space-between; border-bottom: 1px solid var(--border-color, #cfd8dc); pb-0; margin-bottom: 20px;">
         
         <div style="display: flex; gap: 4px;">
-            <div class="tab active" onclick="switchTab('csv')">📄 Procesar CSV</div>
-            <div class="tab" onclick="switchTab('dxf')">📐 Procesar DXF</div>
+            <div class="tab active" onclick="switchTab('csv'); gtag('event', 'cambio_pestaña', {'tipo_modulo': 'csv'});">📄 Procesar CSV</div>
+            <div class="tab" onclick="switchTab('dxf'); gtag('event', 'cambio_pestaña', {'tipo_modulo': 'dxf'});">📐 Procesar DXF</div>
         </div>
 
         <div style="padding-bottom: 8px; display: flex; align-items: center;">
@@ -409,12 +410,11 @@
             </a>
         </div>
     </div>
-<!--------->
-    <div id="tab-csv" class="content active">
+<div id="tab-csv" class="content active">
         
         <div class="form-group">
             <label for="csvFile">Seleccionar archivo CSV sin encabezado (Num, X, Y):</label>
-            <input type="file" id="csvFile" accept=".csv,.txt">
+            <input type="file" id="csvFile" accept=".csv,.txt" onchange="if(this.files.length) gtag('event', 'carga_archivo', {'formato': 'csv'});">
         </div>
 
         <div class="form-group checkbox-group">
@@ -451,7 +451,17 @@
             <label for="csvGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
         </div>
 
-        <button id="csvDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
+        <!--<button id="csvDownloadBtn" class="btn-principal" onclick="gtag('event', 'descarga_resultados', {'modulo_origen': 'csv', 'genero_doc_legal': document.getElementById('csvGenerarTextoDoc').checked ? 'si' : 'no'});" disabled>Descargar Archivos</button> -->
+		<button id="csvDownloadBtn" class="btn-principal" onclick="
+            gtag('event', 'descarga_resultados', {
+                'modulo_origen': 'csv',
+                'invertir_sentido': document.getElementById('csvInvertirSentido').checked ? 'si' : 'no',
+                'decimales_segundos': document.getElementById('csvDecimalesSegundos').value,
+                'genero_doc_legal': document.getElementById('csvGenerarTextoDoc').checked ? 'si' : 'no',
+                'radio_vertice': document.getElementById('csvRadioVertices').value,
+                'altura_texto_vertice': document.getElementById('csvTxtVertices').value,
+                'altura_texto_tabla': document.getElementById('csvTxtTabla').value
+            });" disabled>Descargar Archivos</button>
         
         <div id="csvAlerta" class="alerta"></div>
         <div id="csvInfo" class="panel" style="display:none;"></div>
@@ -465,7 +475,7 @@
         
         <div class="form-group">
             <label for="dxfFile">Seleccionar DXF (Polilínea):</label>
-            <input type="file" id="dxfFile" accept=".dxf">
+            <input type="file" id="dxfFile" accept=".dxf" onchange="if(this.files.length) gtag('event', 'carga_archivo', {'formato': 'dxf'});">
         </div>
 
         <div class="form-group checkbox-group">
@@ -502,7 +512,17 @@
             <label for="dxfGenerarTextoDoc">Generar Texto de la Tabla de Azimut (.doc)</label>
         </div>
 
-        <button id="dxfDownloadBtn" class="btn-principal" disabled>Descargar Archivos</button>
+        <!---<button id="dxfDownloadBtn" class="btn-principal" onclick="gtag('event', 'descarga_resultados', {'modulo_origen': 'dxf', 'genero_doc_legal': document.getElementById('dxfGenerarTextoDoc').checked ? 'si' : 'no'});" disabled>Descargar Archivos</button> -->
+		<button id="dxfDownloadBtn" class="btn-principal" onclick="
+		    gtag('event', 'descarga_resultados', {
+		        'modulo_origen': 'dxf',
+		        'invertir_sentido': document.getElementById('dxfInvertirSentido').checked ? 'si' : 'no',
+		        'decimales_segundos': document.getElementById('dxfDecimalesSegundos').value,
+		        'genero_doc_legal': document.getElementById('dxfGenerarTextoDoc').checked ? 'si' : 'no',
+		        'radio_vertice': document.getElementById('dxfRadioVertices').value,
+		        'altura_texto_vertice': document.getElementById('dxfTxtVertices').value,
+		        'altura_texto_tabla': document.getElementById('dxfTxtTabla').value
+		    });" disabled>Descargar Archivos</button>
         
         <div id="dxfAlerta" class="alerta"></div>
         <div id="dxfInfo" class="panel" style="display:none;"></div>
