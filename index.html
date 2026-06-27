@@ -758,7 +758,7 @@
                     if (!contenidoHtml.startsWith('\ufeff')) {
                         contenidoHtml = '\ufeff' + contenidoHtml;
                     }
-                    triggerDescarga(contenidoHtml, 'minuta_csv.doc', 'application/msword;charset=utf-8');
+                    triggerDescarga(contenidoHtml, 'Texto_csv.doc', 'application/msword;charset=utf-8');
                 }
             } catch (err) { 
                 console.error(err);
@@ -901,14 +901,14 @@
                 });
                 const datos = await respuesta.json();
                 
-                triggerDescarga(datos.dxfContenido, 'poligono_curvas_procesado.dxf', 'application/dxf');
+                triggerDescarga(datos.dxfContenido, 'poligono_dxf.dxf', 'application/dxf');
                 
                 if(document.getElementById('dxfGenerarTextoDoc').checked) {
                     let textoValidoDXF = datos.minutaTextoHtml;
                     if (!textoValidoDXF.startsWith('\ufeff')) {
                         textoValidoDXF = '\ufeff' + textoValidoDXF;
                     }
-                    triggerDescarga(textoValidoDXF, 'minuta_dxf.doc', 'application/msword;charset=utf-8');
+                    triggerDescarga(textoValidoDXF, 'Texto_dxf.doc', 'application/msword;charset=utf-8');
                 }
             } catch (err) { 
                 alert("Error al procesar la descarga desde el servidor."); 
