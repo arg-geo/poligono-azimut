@@ -381,21 +381,23 @@
         .footer-contact-box a:hover { text-decoration: underline; }
 		
     </style>
+
+
+<!-- --------- -->
+
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-
-</head>
-
-
 
 <body class="bg-slate-100 min-h-screen flex flex-col antialiased">
 
     <div id="modalAviso" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden transform transition-all scale-100">
+            
             <div class="bg-blue-900 p-4 text-white flex items-center justify-between">
                 <h3 class="font-bold text-sm tracking-wide uppercase flex items-center gap-2">
                     🌐 Conversión Geodésica
                 </h3>
-                <button onclick="cerrarModal()" class="text-blue-200 hover:text-white font-bold text-lg leading-none">&times;</button>
+                <button onclick="cerrarModal()" class="text-blue-200 hover:text-white font-bold text-lg leading-none cursor-pointer">&times;</button>
             </div>
             
             <div class="p-5 space-y-4">
@@ -406,7 +408,7 @@
                 <div class="text-sm text-blue-900 bg-blue-50/70 p-3 rounded-xl border border-blue-100 flex flex-col space-y-2">
                     <span class="font-semibold text-xs text-blue-700 uppercase tracking-wider">📍 Aplicación Recomendada:</span>
                     <p class="text-xs text-slate-700">
-                        Visite el <strong>Conversor Geográficas  • GTM • UTM WGS84 • UTM NAD27</strong> para procesar proyecciones cartográficas del territorio nacional:
+                        Visite el <strong>Conversor Geográficas • GTM • UTM WGS84 • UTM NAD27</strong> para procesar proyecciones cartográficas del territorio nacional:
                     </p>
                     <a href="https://arg-geo.github.io/conversor-gtm-utm/" target="_blank" class="text-blue-700 hover:text-blue-900 font-bold underline break-all text-xs flex items-center gap-1 mt-1">
                         🚀 arg-geo.github.io/conversor-gtm-utm/
@@ -415,24 +417,21 @@
             </div>
             
             <div class="bg-slate-50 p-3 px-5 flex justify-end border-t border-slate-100">
-                <button onclick="cerrarModal()" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs px-4 py-2 rounded-lg shadow uppercase tracking-wider transition-colors">
+                <button onclick="cerrarModal()" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs px-4 py-2 rounded-lg shadow uppercase tracking-wider transition-colors cursor-pointer">
                     Entendido, Continuar
                 </button>
             </div>
         </div>
     </div>
 
-
-
     <div class="flex-grow">
-        </div>
-
-
 	
-<body>
 
-<body>
 
+
+
+
+<!-- --------- -->
     <div class="header-institucional">
         <h2>Polígonos y Tabla de azimut</h2>
         <p>Polígono • Identificación y numeración de vértices<br>Tabla de azimut • Tabla a texto  •  CAD</p>
